@@ -1,5 +1,5 @@
 {
-  "name": "electron-react-node-boilerplate",
+  "name": "ecotienda-ipuum",
   "version": "1.0.0",
   "description": "An Electron application with React and Node",
   "main": "./main.js",
@@ -16,17 +16,17 @@
   },
   "author": "tbuyse",
   "devDependencies": {
-    "react-app-rewired": "^2.1.3",
-    "customize-cra": "^0.2.12",
-    "react-scripts": "3.0.1",
-    "concurrently": "^4.1.0",
-    "wait-on": "^3.2.0",
-    "electron": "^5.0.2",
-    "electron-builder": "^20.41.0",
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.4",
     "@babel/node": "^7.4.5",
-    "@babel/preset-env": "^7.4.4"
+    "@babel/preset-env": "^7.4.4",
+    "concurrently": "^4.1.0",
+    "customize-cra": "^0.2.12",
+    "electron": "^5.0.2",
+    "electron-builder": "^20.41.0",
+    "react-app-rewired": "^2.1.3",
+    "react-scripts": "3.0.1",
+    "wait-on": "^3.2.0"
   },
   "dependencies": {
     "app-module-path": "^2.2.0",
@@ -34,10 +34,13 @@
     "cors": "^2.8.5",
     "electron-is-dev": "^1.1.0",
     "express": "^4.17.1",
+    "mongoose": "^5.13.3",
     "nodemon": "^1.19.1",
     "piping": "^1.0.0-rc.4",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "react-router-dom": "^5.2.0",
+    "styled-components": "^5.3.0"
   },
   "build": {
     "appId": "com.electron-react-node",

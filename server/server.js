@@ -1,18 +1,14 @@
-import appModulePath from 'app-module-path';
-import http from 'http';
-import express from 'express';
-import cors from 'cors';
-
+import appModulePath from "app-module-path";
+import express from "express";
+import cors from "cors";
+require("./db");
+const routes = require("./routes/routes");
+const app = express();
 appModulePath.addPath(`${__dirname}`);
 
-const Api = express();
-const HTTP = http.Server(Api);
+app.use(cors());
+app.use(routes);
 
-Api.use(cors());
-
-Api.get('/test', (req, res) => res.status(200).send('success!'));
-
-HTTP.listen(9001, () => {
-    console.log('listening on *:9001');
+app.listen(9001, () => {
+    console.log("listening on *:9001");
 });
-
