@@ -12,7 +12,10 @@ import Contabilidad from "./Contabilidad";
 import Historial from "./Historial";
 import Vender from "./Vender";
 import AdministrarVendedores from "./AdministrarVendedores";
+import Fraccionamiento from "./Fraccionamiento";
 import { createGlobalStyle } from "styled-components";
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import AgregarTodo from "./AgregarTodo";
 
 const GlobalStyle = createGlobalStyle`
   html, body, #root {
@@ -20,6 +23,7 @@ const GlobalStyle = createGlobalStyle`
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    background-color: white;
   }
   *{
       box-sizing: border-box;
@@ -45,6 +49,11 @@ export default function App() {
                         path="/administrar-vendedores"
                         component={AdministrarVendedores}
                     />
+                    <Route
+                        path="/fraccionamiento"
+                        component={Fraccionamiento}
+                    />
+                    <Route path="/agregar-todo" component={AgregarTodo} />
                     <Redirect to="/" />
                 </Switch>
             </Router>

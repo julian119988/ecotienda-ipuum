@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export default function Navbar() {
     return (
@@ -68,6 +68,16 @@ export default function Navbar() {
                         Contabilidad
                     </NavLink>
                 </ItemList>
+                <ItemList>
+                    <NavLink
+                        to="fraccionamiento"
+                        activeStyle={{
+                            backgroundColor: "orange",
+                        }}
+                    >
+                        Fraccionamiento
+                    </NavLink>
+                </ItemList>
             </NavList>
         </Nav>
     );
@@ -108,5 +118,8 @@ const ItemList = styled.li`
         justify-content: center;
         color: white;
         text-align: center;
+        &:hover {
+            background-color: wheat;
+        }
     }
 `;

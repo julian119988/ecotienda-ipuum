@@ -6,6 +6,8 @@ const routes = require("./routes/routes");
 const app = express();
 appModulePath.addPath(`${__dirname}`);
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cors());
 app.use(routes);
 

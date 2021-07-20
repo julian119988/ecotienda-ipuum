@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Menu } = require("electron");
+const { app, BrowserWindow } = require("electron");
 const isDev = require("electron-is-dev");
 const path = require("path");
 const url = require("url");
@@ -20,6 +20,7 @@ function createWindow() {
         height: 600,
         webPreferences: {
             nodeIntegration: true,
+            nativeWindowOpen: true,
         },
         autoHideMenuBar: true,
     });

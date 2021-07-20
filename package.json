@@ -29,6 +29,7 @@
     "wait-on": "^3.2.0"
   },
   "dependencies": {
+    "@material-ui/icons": "^4.11.2",
     "app-module-path": "^2.2.0",
     "axios": "^0.18.0",
     "cors": "^2.8.5",
@@ -39,7 +40,9 @@
     "piping": "^1.0.0-rc.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-loader-spinner": "^4.0.0",
     "react-router-dom": "^5.2.0",
+    "smalltalk": "^4.0.7",
     "styled-components": "^5.3.0"
   },
   "build": {
