@@ -16,6 +16,8 @@ import Fraccionamiento from "./Fraccionamiento";
 import { createGlobalStyle } from "styled-components";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import AgregarTodo from "./AgregarTodo";
+import AgregarVendedor from "./AgregarVendedor";
+import AgregarProducto from "./AgregarProducto";
 
 const GlobalStyle = createGlobalStyle`
   html, body, #root {
@@ -54,6 +56,14 @@ export default function App() {
                         component={Fraccionamiento}
                     />
                     <Route path="/agregar-todo" component={AgregarTodo} />
+                    <Route
+                        path="/agregar-vendedor"
+                        component={AgregarVendedor}
+                    />
+                    <Route
+                        path="/agregar-producto"
+                        component={AgregarProducto}
+                    />
                     <Redirect to="/" />
                 </Switch>
             </Router>

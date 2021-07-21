@@ -1,38 +1,36 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { uploadTodo } from "../services/apiCalls";
+import { uploadVendedor } from "../services/apiCalls";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useHistory } from "react-router-dom";
 import smalltalk from "smalltalk";
 
-export default function AgregarTodo() {
-    const [todo, setTodo] = useState({
-        titulo: "",
-        descripcion: "",
-        persona: "",
+export default function AgregarVendedor() {
+    const [vendedor, setVendedor] = useState({
+        nombre: "",
+        antiguedad: "",
     });
-    const titleRef = useRef();
-    const descRef = useRef();
-    const personaRef = useRef();
+    const nombreRef = useRef();
+    const antiguedadRef = useRef();
+
     let history = useHistory();
 
     const handleChange = () => {
-        setTodo({
-            titulo: titleRef.current.value,
-            descripcion: descRef.current.value,
-            persona: personaRef.current.value,
+        setVendedor({
+            nombre: nombreRef.current.value,
+            antiguedad: antiguedadRef.current.value,
         });
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
         e.target.reset();
         try {
-            await uploadTodo(todo);
+            await uploadVendedor(vendedor);
             history.goBack();
         } catch (err) {
             await smalltalk.alert(
                 "Error",
-                "Ha ocurrido un error al agregar la tarea."
+                "Ha ocurrido un error al agregar el vendedor."
             );
         }
     };
@@ -53,29 +51,21 @@ export default function AgregarTodo() {
             <Form onSubmit={handleSubmit}>
                 <Input
                     type="text"
-                    placeholder="Persona"
+                    placeholder="Nombre"
                     onChange={handleChange}
-                    ref={personaRef}
+                    ref={nombreRef}
                     required
                 />
                 <Input
-                    type="text"
-                    placeholder="Titulo"
+                    type="date"
+                    placeholder="Antiguedad"
                     onChange={handleChange}
-                    ref={titleRef}
+                    ref={antiguedadRef}
                     required
-                />
-                <InputDescripcion
-                    type="textarea"
-                    placeholder="Descripcion"
-                    onChange={handleChange}
-                    ref={descRef}
-                    required
-                    style={{ paddingTop: "3vh" }}
                 />
                 <Input
                     type="submit"
-                    value="Subir tarea"
+                    value="Agregar vendedor"
                     style={{
                         color: "white",
                         backgroundColor: "tomato",
@@ -113,16 +103,7 @@ const Input = styled.input`
     padding: 1vh;
     outline: none;
 `;
-const InputDescripcion = styled.textarea`
-    width: 80%;
-    max-width: 500px;
-    margin: 5vh;
-    height: 10vh;
-    border-radius: 5vh;
-    border: 2px solid tomato;
-    padding: 1vh;
-    outline: none;
-`;
+
 const GoBackBar = styled.div`
     width: 100%;
     height: 10vh;

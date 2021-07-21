@@ -35,7 +35,8 @@ function createWindow() {
                   slashes: true,
               })
     );
-    mainWindow.webContents.openDevTools();
+    if (isDev) mainWindow.webContents.openDevTools();
+
     // Open the DevTools.
     // mainWindow.webContents.openDevTools()
 

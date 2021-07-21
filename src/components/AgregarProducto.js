@@ -1,38 +1,57 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import { uploadTodo } from "../services/apiCalls";
+import { uploadProducto } from "../services/apiCalls";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useHistory } from "react-router-dom";
 import smalltalk from "smalltalk";
 
-export default function AgregarTodo() {
-    const [todo, setTodo] = useState({
-        titulo: "",
-        descripcion: "",
-        persona: "",
+export default function AgregarVendedor() {
+    const [producto, setProducto] = useState({
+        producto: "",
+        precioVenta: "",
+        cantidad: "",
+        marca: "",
+        precioCompra: "",
+        porcentajeGanancia: "",
     });
-    const titleRef = useRef();
-    const descRef = useRef();
-    const personaRef = useRef();
+    const productoRef = useRef();
+    const cantidadRef = useRef();
+    const marcaRef = useRef();
+    const precioCompraRef = useRef();
+    const precioVentaRef = useRef();
+    const porcentajeGananciaRef = useRef();
+
     let history = useHistory();
 
     const handleChange = () => {
-        setTodo({
-            titulo: titleRef.current.value,
-            descripcion: descRef.current.value,
-            persona: personaRef.current.value,
+        setProducto({
+            producto: productoRef.current.value,
+            cantidad: cantidadRef.current.value,
+            marca: marcaRef.current.value,
+            precioCompra: precioCompraRef.current.value,
+            precioVenta: precioVentaRef.current.value,
+            porcentajeGanancia: (
+                (precioVentaRef.current.value / precioCompraRef.current.value) *
+                    100 -
+                100
+            ).toFixed(2),
         });
+        porcentajeGananciaRef.current.value = (
+            (precioVentaRef.current.value / precioCompraRef.current.value) *
+                100 -
+            100
+        ).toFixed(2);
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-        e.target.reset();
         try {
-            await uploadTodo(todo);
+            await uploadProducto(producto);
             history.goBack();
         } catch (err) {
+            console.log(err);
             await smalltalk.alert(
                 "Error",
-                "Ha ocurrido un error al agregar la tarea."
+                "Ha ocurrido un error al agregar el producto."
             );
         }
     };
@@ -53,29 +72,50 @@ export default function AgregarTodo() {
             <Form onSubmit={handleSubmit}>
                 <Input
                     type="text"
-                    placeholder="Persona"
+                    placeholder="Producto"
                     onChange={handleChange}
-                    ref={personaRef}
+                    ref={productoRef}
                     required
                 />
                 <Input
                     type="text"
-                    placeholder="Titulo"
+                    placeholder="Marca"
                     onChange={handleChange}
-                    ref={titleRef}
+                    ref={marcaRef}
                     required
                 />
-                <InputDescripcion
-                    type="textarea"
-                    placeholder="Descripcion"
+                <Input
+                    type="number"
+                    placeholder="Cantidad"
                     onChange={handleChange}
-                    ref={descRef}
+                    ref={cantidadRef}
                     required
-                    style={{ paddingTop: "3vh" }}
+                />
+                <Input
+                    type="number"
+                    placeholder="Precio de compra"
+                    onChange={handleChange}
+                    ref={precioCompraRef}
+                    required
+                />
+                <Input
+                    type="number"
+                    placeholder="Precio de venta"
+                    onChange={handleChange}
+                    ref={precioVentaRef}
+                    required
+                />
+                <Input
+                    type="text"
+                    placeholder="Porcentaje de ganancia"
+                    onChange={handleChange}
+                    ref={porcentajeGananciaRef}
+                    disabled={true}
+                    required
                 />
                 <Input
                     type="submit"
-                    value="Subir tarea"
+                    value="Agregar producto"
                     style={{
                         color: "white",
                         backgroundColor: "tomato",
@@ -106,23 +146,14 @@ const Form = styled.form`
 const Input = styled.input`
     width: 80%;
     max-width: 500px;
-    margin: 5vh;
+    margin: 1vh;
     height: 5vh;
     border-radius: 5vh;
     border: 2px solid tomato;
     padding: 1vh;
     outline: none;
 `;
-const InputDescripcion = styled.textarea`
-    width: 80%;
-    max-width: 500px;
-    margin: 5vh;
-    height: 10vh;
-    border-radius: 5vh;
-    border: 2px solid tomato;
-    padding: 1vh;
-    outline: none;
-`;
+
 const GoBackBar = styled.div`
     width: 100%;
     height: 10vh;

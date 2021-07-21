@@ -1,33 +1,6 @@
 const ProductosModel = require("../models/ProductosModel");
 const TodoModel = require("../models/TodoModel");
-
-export const uploadProducto = async (req, res, next) => {
-    try {
-        const nuevoProducto = new ProductosModel({
-            producto: "Semillas",
-            precioVenta: 700,
-            cantidad: 10,
-            marca: "Una marca",
-            precioCompra: 500,
-            porcentajeGanancia: 1.4,
-        });
-        const isSaved = await nuevoProducto.save();
-        res.send(isSaved);
-    } catch (err) {
-        res.status(413).send(err);
-        next(err);
-    }
-};
-
-export const getProductos = async (req, res, next) => {
-    try {
-        const response = await ProductosModel.find();
-        res.send(response);
-    } catch (err) {
-        res.status(413).send(err);
-        next(err);
-    }
-};
+const VendedoresModel = require("../models/VendedoresModel");
 
 export const getTodos = async (req, res, next) => {
     try {
@@ -53,14 +26,120 @@ export const uploadTodo = async (req, res, next) => {
         next(err);
     }
 };
-
 export const deleteTodo = async (req, res, next) => {
     const { id } = await req.body;
     try {
-        console.log(req.body);
         const isDeleted = await TodoModel.findOneAndDelete({ _id: id });
         res.send(isDeleted);
     } catch (err) {
         res.status(413).send(err);
+    }
+};
+
+export const uploadVendedor = async (req, res, next) => {
+    const { data } = await req.body;
+    try {
+        const nuevoVendedor = new VendedoresModel({
+            nombre: data.nombre,
+            antiguedad: data.antiguedad,
+        });
+        const isSaved = await nuevoVendedor.save();
+        res.send(isSaved);
+    } catch (err) {
+        res.status(413).send(err);
+        next(err);
+    }
+};
+export const getVendedores = async (req, res, next) => {
+    try {
+        const vendedores = await VendedoresModel.find();
+        res.send(vendedores);
+    } catch (err) {
+        res.status(413).send(err);
+        next(err);
+    }
+};
+export const deleteVendedor = async (req, res, next) => {
+    const { id } = await req.body;
+    try {
+        const isDeleted = await VendedoresModel.findOneAndDelete({ _id: id });
+        res.send(isDeleted);
+    } catch (err) {
+        res.status(413).send(err);
+    }
+};
+
+export const uploadProducto = async (req, res, next) => {
+    const {
+        producto,
+        precioVenta,
+        cantidad,
+        marca,
+        precioCompra,
+        porcentajeGanancia,
+    } = await req.body;
+    console.log(req.body);
+    try {
+        const nuevoProducto = new ProductosModel({
+            producto: producto.toString(),
+            precioVenta: parseInt(precioVenta),
+            cantidad: parseInt(cantidad),
+            marca: marca.toString(),
+            precioCompra: parseInt(precioCompra),
+            porcentajeGanancia: parseInt(porcentajeGanancia),
+        });
+        console.log({
+            producto: producto.toString(),
+            precioVenta: parseInt(precioVenta),
+            cantidad: parseInt(cantidad),
+            marca: marca.toString(),
+            precioCompra: parseInt(precioCompra),
+            porcentajeGanancia: parseInt(porcentajeGanancia),
+        });
+        const isSaved = await nuevoProducto.save();
+        res.send(isSaved);
+    } catch (err) {
+        res.status(413).send(err);
+        next(err);
+    }
+};
+export const getProductos = async (req, res, next) => {
+    const { producto } = await req.params;
+    try {
+        if (producto === "all") {
+            const response = await ProductosModel.find();
+            res.send(response);
+        } else {
+            const regex = new RegExp(producto, "i");
+            const response = await ProductosModel.find({
+                producto: { $regex: regex },
+            }).exec();
+            res.send(response);
+        }
+    } catch (err) {
+        res.status(413).send(err);
+        console.log(err);
+        next(err);
+    }
+};
+export const deleteProducto = async (req, res, next) => {
+    const { id } = await req.body;
+    console.log(id);
+    try {
+        const isDeleted = await ProductosModel.findOneAndDelete({ _id: id });
+        res.send(isDeleted);
+    } catch (err) {
+        res.status(413).send(err);
+        next(err);
+    }
+};
+export const updateProducto = async (req, res, next) => {
+    const { id } = await req.body;
+    try {
+        const isDeleted = await ProductosModel.findOneAndDelete({ _id: id });
+        res.send(isDeleted);
+    } catch (err) {
+        res.status(413).send(err);
+        next(err);
     }
 };

@@ -121,5 +121,8 @@ const ItemList = styled.li`
         &:hover {
             background-color: wheat;
         }
+        &:focus {
+            background-color: wheat;
+        }
     }
 `;
