@@ -1,6 +1,7 @@
 const ProductosModel = require("../models/ProductosModel");
 const TodoModel = require("../models/TodoModel");
 const VendedoresModel = require("../models/VendedoresModel");
+const FraccionamientoModel = require("../models/FraccionamientoModel");
 
 export const getTodos = async (req, res, next) => {
     try {
@@ -104,15 +105,18 @@ export const uploadProducto = async (req, res, next) => {
     }
 };
 export const getProductos = async (req, res, next) => {
-    const { producto } = await req.params;
+    const { busqueda } = await req.params;
     try {
-        if (producto === "all") {
+        if (busqueda === "all") {
             const response = await ProductosModel.find();
             res.send(response);
         } else {
-            const regex = new RegExp(producto, "i");
+            const regex = new RegExp(busqueda, "i");
             const response = await ProductosModel.find({
-                producto: { $regex: regex },
+                $or: [
+                    { producto: { $regex: regex } },
+                    { marca: { $regex: regex } },
+                ],
             }).exec();
             res.send(response);
         }
@@ -124,7 +128,6 @@ export const getProductos = async (req, res, next) => {
 };
 export const deleteProducto = async (req, res, next) => {
     const { id } = await req.body;
-    console.log(id);
     try {
         const isDeleted = await ProductosModel.findOneAndDelete({ _id: id });
         res.send(isDeleted);
@@ -134,9 +137,52 @@ export const deleteProducto = async (req, res, next) => {
     }
 };
 export const updateProducto = async (req, res, next) => {
+    const { id } = await req.params;
+    const { producto } = await req.body;
+    try {
+        const isUpdated = await ProductosModel.findByIdAndUpdate(id, producto);
+        res.send(isUpdated);
+    } catch (err) {
+        res.status(413).send(err);
+        next(err);
+    }
+};
+
+export const getFraccionamiento = async (req, res, next) => {
+    try {
+        const fraccionamientos = await FraccionamientoModel.find();
+        res.send(fraccionamientos);
+    } catch (err) {
+        res.status(413).send(
+            "Ha ocurrido un error al buscar los fraccionamientos."
+        );
+    }
+};
+export const postFraccionamiento = async (req, res, next) => {
+    const { nombre, descripcion, ganancia, cantidad, fecha } = await req.body;
+    try {
+        const nuevoFraccionamiento = new FraccionamientoModel({
+            nombre,
+            descripcion,
+            ganancia,
+            cantidad,
+            fecha,
+        });
+        const isSaved = await nuevoFraccionamiento.save();
+        res.send(isSaved);
+    } catch (err) {
+        res.status(413).send(
+            "Ha ocurrido un error guardando el fraccionamiento."
+        );
+        next(err);
+    }
+};
+export const deleteFraccionamiento = async (req, res, next) => {
     const { id } = await req.body;
     try {
-        const isDeleted = await ProductosModel.findOneAndDelete({ _id: id });
+        const isDeleted = await FraccionamientoModel.findOneAndDelete({
+            _id: id,
+        });
         res.send(isDeleted);
     } catch (err) {
         res.status(413).send(err);

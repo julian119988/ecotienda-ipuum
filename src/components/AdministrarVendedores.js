@@ -54,6 +54,9 @@ export default function AdministarVendedores() {
                 <Table>
                     <Thead>
                         <Tr>
+                            <Th colSpan="3">Vendedores</Th>
+                        </Tr>
+                        <Tr>
                             <Th>Nombre</Th>
                             <Th>Antigüedad</Th>
                             <Th delete>Eliminar Vendedor</Th>
@@ -133,6 +136,7 @@ const Td = styled.td`
     border: 1px solid #ddd;
     word-break: break-word;
     padding-left: 5px;
+    text-align: center;
     ${(props) =>
         props.delete
             ? "width: 150px; padding:0; margin:0;"

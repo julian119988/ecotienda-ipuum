@@ -1,51 +1,72 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import styled from "styled-components";
-import { uploadProducto } from "../services/apiCalls";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import smalltalk from "smalltalk";
 
 export default function AgregarVendedor() {
-    const [producto, setProducto] = useState({
-        producto: "",
-        precioVenta: "",
-        cantidad: "",
-        marca: "",
-        precioCompra: "",
-        porcentajeGanancia: "",
-    });
+    const [producto, setProducto] = useState();
     const productoRef = useRef();
     const cantidadRef = useRef();
     const marcaRef = useRef();
     const precioCompraRef = useRef();
     const precioVentaRef = useRef();
     const porcentajeGananciaRef = useRef();
-
+    const location = useLocation();
     let history = useHistory();
 
+    useEffect(() => {
+        if (location.state.default) {
+            setProducto(() => location.state.producto);
+            productoRef.current.defaultValue = location.state.producto.producto;
+            cantidadRef.current.defaultValue = location.state.producto.cantidad;
+            marcaRef.current.defaultValue = location.state.producto.marca;
+            precioCompraRef.current.defaultValue =
+                location.state.producto.precioCompra;
+            precioVentaRef.current.defaultValue =
+                location.state.producto.precioVenta;
+            porcentajeGananciaRef.current.defaultValue =
+                location.state.producto.porcentajeGanancia;
+            productoRef.current.focus();
+        } else {
+            setProducto({
+                producto: "",
+                precioVenta: "",
+                cantidad: "",
+                marca: "",
+                precioCompra: "",
+                porcentajeGanancia: "",
+                _id: "",
+            });
+            productoRef.current.focus();
+        }
+    }, []);
+    function toFixedIfNecessary(value, dp) {
+        return +parseFloat(value).toFixed(dp);
+    }
+
     const handleChange = () => {
+        const precioVenta =
+            (porcentajeGananciaRef.current.value *
+                precioCompraRef.current.value) /
+                100 +
+            parseInt(precioCompraRef.current.value);
+
         setProducto({
+            _id: producto._id,
             producto: productoRef.current.value,
             cantidad: cantidadRef.current.value,
             marca: marcaRef.current.value,
             precioCompra: precioCompraRef.current.value,
-            precioVenta: precioVentaRef.current.value,
-            porcentajeGanancia: (
-                (precioVentaRef.current.value / precioCompraRef.current.value) *
-                    100 -
-                100
-            ).toFixed(2),
+            precioVenta: toFixedIfNecessary(precioVenta, 2),
+            porcentajeGanancia: porcentajeGananciaRef.current.value,
         });
-        porcentajeGananciaRef.current.value = (
-            (precioVentaRef.current.value / precioCompraRef.current.value) *
-                100 -
-            100
-        ).toFixed(2);
+        precioVentaRef.current.value = toFixedIfNecessary(precioVenta, 2);
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await uploadProducto(producto);
+            await location.state.funcion(producto);
             history.goBack();
         } catch (err) {
             console.log(err);
@@ -54,6 +75,10 @@ export default function AgregarVendedor() {
                 "Ha ocurrido un error al agregar el producto."
             );
         }
+    };
+
+    const handleFocus = (e) => {
+        e.target.select();
     };
 
     return (
@@ -70,52 +95,67 @@ export default function AgregarVendedor() {
                 />
             </GoBackBar>
             <Form onSubmit={handleSubmit}>
+                <Label>Nombre del producto</Label>
                 <Input
                     type="text"
                     placeholder="Producto"
                     onChange={handleChange}
                     ref={productoRef}
+                    onFocus={handleFocus}
                     required
                 />
+                <Label>Marca o Proveedor</Label>
                 <Input
                     type="text"
                     placeholder="Marca"
                     onChange={handleChange}
                     ref={marcaRef}
+                    onFocus={handleFocus}
                     required
                 />
+                <Label>Stock</Label>
                 <Input
                     type="number"
                     placeholder="Cantidad"
                     onChange={handleChange}
                     ref={cantidadRef}
+                    onFocus={handleFocus}
                     required
                 />
+                <Label>Precio de compra</Label>
                 <Input
                     type="number"
                     placeholder="Precio de compra"
                     onChange={handleChange}
                     ref={precioCompraRef}
+                    onFocus={handleFocus}
                     required
                 />
+                <Label>Precio de venta</Label>
                 <Input
                     type="number"
                     placeholder="Precio de venta"
                     onChange={handleChange}
                     ref={precioVentaRef}
+                    k
+                    disabled={true}
                     required
                 />
+                <Label>
+                    Porcentaje de ganancia (Ingrese el valor en porcentaje sin
+                    simbolo)
+                </Label>
                 <Input
-                    type="text"
+                    type="number"
                     placeholder="Porcentaje de ganancia"
                     onChange={handleChange}
                     ref={porcentajeGananciaRef}
-                    disabled={true}
+                    onFocus={handleFocus}
                     required
                 />
                 <Input
                     type="submit"
-                    value="Agregar producto"
+                    value={location.state.from}
                     style={{
                         color: "white",
                         backgroundColor: "tomato",
@@ -126,6 +166,11 @@ export default function AgregarVendedor() {
         </Container>
     );
 }
+const Label = styled.label`
+    margin-top: 1vh;
+    width: 80%;
+    max-width: 500px;
+`;
 
 const Container = styled.div`
     display: flex;

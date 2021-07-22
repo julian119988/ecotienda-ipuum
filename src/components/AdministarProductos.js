@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Loader from "react-loader-spinner";
 import styled from "styled-components";
-import { deleteProducto, getProductos } from "../services/apiCalls";
+import {
+    deleteProducto,
+    getProductos,
+    updateProducto,
+    uploadProducto,
+} from "../services/apiCalls";
 import smalltalk from "smalltalk";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
@@ -39,10 +44,12 @@ export default function AdministarProductos() {
         try {
             if (await deleteProducto(id)) await fetchProductos();
         } catch (err) {
-            smalltalk.alert("Error!", "No se ha podido eliminar el producto.");
+            await smalltalk.alert(
+                "Error!",
+                "No se ha podido eliminar el producto."
+            );
         }
     };
-    const handleEditClick = async (id) => {};
 
     const handleKeypress = (e) => {
         //it triggers by pressing the enter key
@@ -51,10 +58,78 @@ export default function AdministarProductos() {
         }
     };
 
+    const editarCampo = async (campo, id, current, literal, opt) => {
+        let tipo = "number";
+        let seguir = true;
+        let response;
+        if (campo === "Producto" || campo === "Marca") tipo = "string";
+        try {
+            while (seguir) {
+                response = await smalltalk.prompt(
+                    campo,
+                    `Esta editando el siguiente campo: ${campo}`,
+                    current
+                );
+                seguir = checkType(tipo, response);
+            }
+            if (tipo === "number") {
+                if (campo === "Cantidad") {
+                    await updateProducto({
+                        _id: id,
+                        [literal]: parseInt(response),
+                    });
+                } else if (campo === "Precio de compra") {
+                    await updateProducto({
+                        _id: id,
+                        [literal]: parseInt(response),
+                        precioVenta:
+                            (parseInt(response) * parseInt(opt)) / 100 +
+                            parseInt(response),
+                    });
+                } else {
+                    await updateProducto({
+                        _id: id,
+                        [literal]: parseInt(response),
+                        precioVenta:
+                            (parseInt(opt) * parseInt(response)) / 100 +
+                            parseInt(opt),
+                    });
+                }
+            } else {
+                await updateProducto({ _id: id, [literal]: response });
+            }
+            await fetchProductos(busqueda);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const checkType = (tipo, value) => {
+        if (tipo === "number") {
+            if (parseInt(value)) {
+                return false;
+            }
+        } else {
+            if (value) {
+                return false;
+            }
+        }
+        return true;
+    };
+
     return (
         <Container>
             <UploadProductoButton
-                onClick={() => history.push("/agregar-producto")}
+                onClick={() =>
+                    history.push({
+                        pathname: "/agregar-producto",
+                        state: {
+                            funcion: uploadProducto,
+                            from: "Agregar producto",
+                            default: false,
+                        },
+                    })
+                }
             >
                 Agregar Producto
             </UploadProductoButton>
@@ -86,73 +161,154 @@ export default function AdministarProductos() {
                     </Center>
                 )
             ) : (
-                <Table>
-                    <Thead>
-                        <Tr>
-                            <Th style={{ width: "70px" }}>_id</Th>
-                            <Th>Producto</Th>
-                            <Th>Marca</Th>
-                            <Th>Cantidad</Th>
-                            <Th>Precio compra</Th>
-                            <Th>Precio venta</Th>
-                            <Th>Porcentaje de ganancia</Th>
-                            <Th short>Editar</Th>
-                            <Th short>Eliminar</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {productos.map((product) => {
-                            const {
-                                _id,
-                                producto,
-                                cantidad,
-                                marca,
-                                precioCompra,
-                                precioVenta,
-                                porcentajeGanancia,
-                            } = product;
-                            return (
-                                <Tr key={_id}>
-                                    <Td short>{_id}</Td>
-                                    <Td>{producto}</Td>
-                                    <Td> {marca}</Td>
-                                    <Td>{cantidad}</Td>
-                                    <Td>{precioCompra}</Td>
-                                    <Td>{precioVenta}</Td>
-                                    <Td style={{ width: "180px" }}>
-                                        {porcentajeGanancia}
-                                    </Td>
-                                    <Td short>
-                                        <Button
-                                            onClick={() => handleEditClick(_id)}
-                                        >
-                                            <EditIcon
-                                                style={{ fill: "white" }}
-                                            />
-                                        </Button>
-                                    </Td>
-                                    <Td short>
-                                        <Button
-                                            delete
+                <>
+                    <Label>
+                        Se puede editar solo un campo ya sea
+                        producto/marca/cantidad/precio compra/precio venta
+                        haciendo click sobre el mismo. O en el boton de editar
+                        se pueden editar todos los campos.
+                    </Label>
+                    <Table>
+                        <Thead>
+                            <Tr>
+                                <Th colSpan="9">Productos</Th>
+                            </Tr>
+                            <Tr>
+                                <Th style={{ width: "70px" }}>_id</Th>
+                                <Th>Producto</Th>
+                                <Th>Marca</Th>
+                                <Th>Cantidad</Th>
+                                <Th>Precio compra</Th>
+                                <Th>Precio venta</Th>
+                                <Th>Porcentaje de ganancia</Th>
+                                <Th short>Editar</Th>
+                                <Th short>Eliminar</Th>
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            {productos.map((product) => {
+                                const {
+                                    _id,
+                                    producto,
+                                    cantidad,
+                                    marca,
+                                    precioCompra,
+                                    precioVenta,
+                                    porcentajeGanancia,
+                                } = product;
+                                return (
+                                    <Tr key={_id}>
+                                        <Td short>{_id}</Td>
+                                        <Td
                                             onClick={() =>
-                                                handleDeleteClick(_id)
+                                                editarCampo(
+                                                    "Producto",
+                                                    _id,
+                                                    producto,
+                                                    "producto"
+                                                )
                                             }
-                                            onKeyPress={handleKeypress}
+                                            hoverable
                                         >
-                                            <DeleteIcon
-                                                style={{ fill: "white" }}
-                                            />
-                                        </Button>
-                                    </Td>
-                                </Tr>
-                            );
-                        })}
-                    </Tbody>
-                </Table>
+                                            {producto}
+                                        </Td>
+                                        <Td
+                                            onClick={() =>
+                                                editarCampo("Marca", _id, marca)
+                                            }
+                                            hoverable
+                                        >
+                                            {marca}
+                                        </Td>
+                                        <Td
+                                            onClick={() =>
+                                                editarCampo(
+                                                    "Cantidad",
+                                                    _id,
+                                                    cantidad,
+                                                    "cantidad"
+                                                )
+                                            }
+                                            hoverable
+                                        >
+                                            {cantidad}
+                                        </Td>
+                                        <Td
+                                            onClick={() =>
+                                                editarCampo(
+                                                    "Precio de compra",
+                                                    _id,
+                                                    precioCompra,
+                                                    "precioCompra",
+                                                    porcentajeGanancia
+                                                )
+                                            }
+                                            hoverable
+                                        >
+                                            {precioCompra}
+                                        </Td>
+                                        <Td>{precioVenta}</Td>
+                                        <Td
+                                            style={{ width: "180px" }}
+                                            onClick={() =>
+                                                editarCampo(
+                                                    "Porcentaje de ganancia",
+                                                    _id,
+                                                    porcentajeGanancia,
+                                                    "porcentajeGanancia",
+                                                    precioCompra
+                                                )
+                                            }
+                                            hoverable
+                                        >
+                                            {porcentajeGanancia}
+                                        </Td>
+                                        <Td short>
+                                            <Button
+                                                onClick={() =>
+                                                    history.push({
+                                                        pathname:
+                                                            "/agregar-producto",
+                                                        state: {
+                                                            funcion:
+                                                                updateProducto,
+                                                            from: "Editar producto",
+                                                            default: true,
+                                                            producto: product,
+                                                        },
+                                                    })
+                                                }
+                                            >
+                                                <EditIcon
+                                                    style={{ fill: "white" }}
+                                                />
+                                            </Button>
+                                        </Td>
+                                        <Td short>
+                                            <Button
+                                                delete
+                                                onClick={() =>
+                                                    handleDeleteClick(_id)
+                                                }
+                                                onKeyPress={handleKeypress}
+                                            >
+                                                <DeleteIcon
+                                                    style={{ fill: "white" }}
+                                                />
+                                            </Button>
+                                        </Td>
+                                    </Tr>
+                                );
+                            })}
+                        </Tbody>
+                    </Table>
+                </>
             )}
         </Container>
     );
 }
+
+const Label = styled.label``;
 
 const Container = styled.div`
     width: 100%;
@@ -219,6 +375,16 @@ const Td = styled.td`
     max-width: 150px;
     text-align: center;
     ${(props) => props.short && "width: 100px; margin: 0; padding: 0;"}
+
+    ${(props) => !props.hoverable && `background-color: aliceblue;`}
+    &:hover {
+        ${(props) =>
+            props.hoverable
+                ? `cursor: pointer;
+        background-color: gray;
+        color: white;`
+                : "cursor: default;"}
+    }
 `;
 const Tr = styled.tr``;
 

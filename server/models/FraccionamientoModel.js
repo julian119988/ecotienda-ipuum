@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const fraccionamientoSchema = new Schema({
     nombre: String,
     descripcion: String,
-    ganancia: String,
+    ganancia: Number,
     fecha: Date,
     cantidad: Number,
 });

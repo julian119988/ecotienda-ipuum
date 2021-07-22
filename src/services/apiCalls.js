@@ -82,13 +82,16 @@ export const uploadProducto = async (producto) => {
         return err;
     }
 };
-export const updateProducto = async () => {
+export const updateProducto = async (producto) => {
     try {
+        const response = await api.patch(`/productos/${producto._id}`, {
+            producto,
+        });
+        return response;
     } catch (err) {
         return err;
     }
 };
-
 export const deleteProducto = async (id) => {
     try {
         await smalltalk.confirm(
@@ -96,6 +99,35 @@ export const deleteProducto = async (id) => {
             "Seguro quiere eliminar este producto?"
         );
         await api.delete("/productos", { data: { id: id } });
+        return true;
+    } catch (err) {
+        return false;
+    }
+};
+
+//Apicalls Fraccionamiento
+export const getFraccionamiento = async () => {
+    try {
+        const response = await api.get("/fraccionamiento");
+        return response.data;
+    } catch (err) {
+        return false;
+    }
+};
+export const postFraccionamiento = async (fraccionamiento) => {
+    try {
+        return await api.post("/fraccionamiento", fraccionamiento);
+    } catch (err) {
+        return false;
+    }
+};
+export const deleteFraccionamiento = async (id) => {
+    try {
+        await smalltalk.confirm(
+            "Confirmar",
+            "Seguro quiere eliminar este fraccionamiento?"
+        );
+        await api.delete("/fraccionamiento", { data: { id: id } });
         return true;
     } catch (err) {
         return false;
