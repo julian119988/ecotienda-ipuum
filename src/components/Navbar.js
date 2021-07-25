@@ -2,83 +2,119 @@ import * as React from "react";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
 
-export default function Navbar() {
+export default function Navbar(props) {
     return (
         <Nav>
-            <NavList>
-                <ItemList>
-                    <NavLink
-                        to="/"
-                        exact={true}
-                        activeStyle={{
-                            backgroundColor: "orange",
-                        }}
-                    >
-                        Home
-                    </NavLink>
-                </ItemList>
-                <ItemList>
-                    <NavLink
-                        to="vender"
-                        activeStyle={{
-                            backgroundColor: "orange",
-                        }}
-                    >
-                        Vender
-                    </NavLink>
-                </ItemList>
-                <ItemList>
-                    <NavLink
-                        to="administrar-productos"
-                        activeStyle={{
-                            backgroundColor: "orange",
-                        }}
-                    >
-                        Administar Productos
-                    </NavLink>
-                </ItemList>
-                <ItemList>
-                    <NavLink
-                        to="administrar-vendedores"
-                        activeStyle={{
-                            backgroundColor: "orange",
-                        }}
-                    >
-                        Administar Vendedores
-                    </NavLink>
-                </ItemList>
-                <ItemList>
-                    <NavLink
-                        to="historial"
-                        activeStyle={{
-                            backgroundColor: "orange",
-                        }}
-                    >
-                        Historial
-                    </NavLink>
-                </ItemList>
+            {props.isAdmin ? (
+                <NavList>
+                    <ItemList>
+                        <NavLink
+                            to="/"
+                            exact={true}
+                            activeStyle={{
+                                backgroundColor: "orange",
+                            }}
+                        >
+                            Home
+                        </NavLink>
+                    </ItemList>
+                    <ItemList>
+                        <NavLink
+                            to="vender"
+                            activeStyle={{
+                                backgroundColor: "orange",
+                            }}
+                        >
+                            Vender
+                        </NavLink>
+                    </ItemList>
+                    <ItemList>
+                        <NavLink
+                            to="administrar-productos"
+                            activeStyle={{
+                                backgroundColor: "orange",
+                            }}
+                        >
+                            Administar Productos
+                        </NavLink>
+                    </ItemList>
+                    <ItemList>
+                        <NavLink
+                            to="administrar-vendedores"
+                            activeStyle={{
+                                backgroundColor: "orange",
+                            }}
+                        >
+                            Administar Vendedores
+                        </NavLink>
+                    </ItemList>
+                    <ItemList>
+                        <NavLink
+                            to="historial"
+                            activeStyle={{
+                                backgroundColor: "orange",
+                            }}
+                        >
+                            Historial
+                        </NavLink>
+                    </ItemList>
 
-                <ItemList>
-                    <NavLink
-                        to="contabilidad"
-                        activeStyle={{
-                            backgroundColor: "orange",
-                        }}
-                    >
-                        Contabilidad
-                    </NavLink>
-                </ItemList>
-                <ItemList>
-                    <NavLink
-                        to="fraccionamiento"
-                        activeStyle={{
-                            backgroundColor: "orange",
-                        }}
-                    >
-                        Fraccionamiento
-                    </NavLink>
-                </ItemList>
-            </NavList>
+                    <ItemList>
+                        <NavLink
+                            to="contabilidad"
+                            activeStyle={{
+                                backgroundColor: "orange",
+                            }}
+                        >
+                            Contabilidad
+                        </NavLink>
+                    </ItemList>
+                    <ItemList>
+                        <NavLink
+                            to="fraccionamiento"
+                            activeStyle={{
+                                backgroundColor: "orange",
+                            }}
+                        >
+                            Fraccionamiento
+                        </NavLink>
+                    </ItemList>
+                </NavList>
+            ) : (
+                <NavList>
+                    <ItemList>
+                        <NavLink
+                            to="/"
+                            exact={true}
+                            activeStyle={{
+                                backgroundColor: "orange",
+                            }}
+                        >
+                            Home
+                        </NavLink>
+                    </ItemList>
+                    <ItemList>
+                        <NavLink
+                            to="vender"
+                            activeStyle={{
+                                backgroundColor: "orange",
+                            }}
+                        >
+                            Vender
+                        </NavLink>
+                    </ItemList>
+                    <ItemList>
+                        <NavLink
+                            to="fraccionamiento"
+                            activeStyle={{
+                                backgroundColor: "orange",
+                            }}
+                        >
+                            Fraccionamiento
+                        </NavLink>
+                    </ItemList>
+                </NavList>
+            )}
         </Nav>
     );
 }

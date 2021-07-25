@@ -2,6 +2,7 @@ const ProductosModel = require("../models/ProductosModel");
 const TodoModel = require("../models/TodoModel");
 const VendedoresModel = require("../models/VendedoresModel");
 const FraccionamientoModel = require("../models/FraccionamientoModel");
+const bcrypt = require("bcrypt");
 
 export const getTodos = async (req, res, next) => {
     try {
@@ -40,12 +41,48 @@ export const deleteTodo = async (req, res, next) => {
 export const uploadVendedor = async (req, res, next) => {
     const { data } = await req.body;
     try {
-        const nuevoVendedor = new VendedoresModel({
-            nombre: data.nombre,
-            antiguedad: data.antiguedad,
+        bcrypt.hash(data.password, 11, async function (err, hash) {
+            const nuevoVendedor = new VendedoresModel({
+                nombre: data.nombre,
+                antiguedad: data.antiguedad,
+                password: hash,
+                rol: data.rol,
+            });
+            const isSaved = await nuevoVendedor.save();
+            res.send(isSaved);
         });
-        const isSaved = await nuevoVendedor.save();
-        res.send(isSaved);
+    } catch (err) {
+        res.status(413).send(err);
+        next(err);
+    }
+};
+export const checkPass = async (req, res, next) => {
+    const { data } = await req.body;
+    try {
+        const savedUser = await VendedoresModel.findOne({
+            nombre: data.nombre,
+        });
+        if (savedUser) {
+            bcrypt.compare(
+                data.password,
+                savedUser.password,
+                function (err, result) {
+                    if (result) {
+                        res.send({
+                            isAuthenticated: true,
+                            user: {
+                                _id: savedUser._id,
+                                nombre: savedUser.nombre,
+                                rol: savedUser.rol,
+                                antiguedad: savedUser.antiguedad,
+                            },
+                        });
+                    } else {
+                        res.send({ isAuthenticated: false });
+                    }
+                }
+            );
+        }
     } catch (err) {
         res.status(413).send(err);
         next(err);
@@ -67,6 +104,7 @@ export const deleteVendedor = async (req, res, next) => {
         res.send(isDeleted);
     } catch (err) {
         res.status(413).send(err);
+        next(err);
     }
 };
 
@@ -79,7 +117,6 @@ export const uploadProducto = async (req, res, next) => {
         precioCompra,
         porcentajeGanancia,
     } = await req.body;
-    console.log(req.body);
     try {
         const nuevoProducto = new ProductosModel({
             producto: producto.toString(),

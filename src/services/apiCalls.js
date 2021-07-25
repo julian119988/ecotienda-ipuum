@@ -64,6 +64,16 @@ export const getVendedores = async () => {
         return err;
     }
 };
+export const checkPass = async (nombre, password) => {
+    try {
+        const response = await api.post(`/vendedor/${nombre}`, {
+            data: { nombre, password },
+        });
+        return response.data;
+    } catch (err) {
+        return true;
+    }
+};
 
 //Apicalls Productos/Stock
 export const getProductos = async (busqueda) => {

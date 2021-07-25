@@ -6,7 +6,7 @@ import { getVendedores, deleteVendedor } from "../services/apiCalls";
 import smalltalk from "smalltalk";
 import Loader from "react-loader-spinner";
 
-export default function AdministarVendedores() {
+export default function AdministarVendedores(props) {
     const [vendedores, setVendedores] = React.useState(undefined);
     const history = useHistory();
 
@@ -23,13 +23,20 @@ export default function AdministarVendedores() {
         }
     };
     const handleClick = async (id) => {
-        try {
-            await deleteVendedor(id);
-            await fetchVendedores();
-        } catch (err) {
+        if (props.user._id !== id) {
+            try {
+                await deleteVendedor(id);
+                await fetchVendedores();
+            } catch (err) {
+                await smalltalk.alert(
+                    "Error",
+                    "Ha ocurrido un error al agregar el vendedor."
+                );
+            }
+        } else {
             await smalltalk.alert(
                 "Error",
-                "Ha ocurrido un error al agregar el vendedor."
+                "No se puede eliminar el usuario loggeado."
             );
         }
     };
@@ -54,12 +61,15 @@ export default function AdministarVendedores() {
                 <Table>
                     <Thead>
                         <Tr>
-                            <Th colSpan="3">Vendedores</Th>
+                            <Th colSpan="4">Vendedores</Th>
                         </Tr>
                         <Tr>
                             <Th>Nombre</Th>
                             <Th>Antigüedad</Th>
-                            <Th delete>Eliminar Vendedor</Th>
+                            <Th>Rol</Th>
+                            <Th delete style={{ minWidth: "150px" }}>
+                                Eliminar Vendedor
+                            </Th>
                         </Tr>
                     </Thead>
                     <Tbody>
@@ -71,6 +81,7 @@ export default function AdministarVendedores() {
                                 <Tr key={vendedor._id}>
                                     <Td>{vendedor.nombre}</Td>
                                     <Td>{`${dia}/${mes}/${year}`}</Td>
+                                    <Td>{vendedor.rol ? vendedor.rol : "-"}</Td>
                                     <Td
                                         delete
                                         onClick={() =>
@@ -118,6 +129,8 @@ const Center = styled.div`
 const Table = styled.table`
     margin-top: 16px;
     border-collapse: collapse;
+    display: block;
+    overflow-x: auto;
 `;
 
 const Thead = styled.thead``;

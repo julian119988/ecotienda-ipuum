@@ -9,9 +9,14 @@ export default function AgregarVendedor() {
     const [vendedor, setVendedor] = useState({
         nombre: "",
         antiguedad: "",
+        password: "",
+        rol: "",
     });
     const nombreRef = useRef();
     const antiguedadRef = useRef();
+    const passwordRef = useRef();
+    const password2Ref = useRef();
+    const rolRef = useRef();
 
     let history = useHistory();
 
@@ -19,19 +24,25 @@ export default function AgregarVendedor() {
         setVendedor({
             nombre: nombreRef.current.value,
             antiguedad: antiguedadRef.current.value,
+            password: passwordRef.current.value,
+            rol: rolRef.current.value,
         });
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-        e.target.reset();
-        try {
-            await uploadVendedor(vendedor);
-            history.goBack();
-        } catch (err) {
-            await smalltalk.alert(
-                "Error",
-                "Ha ocurrido un error al agregar el vendedor."
-            );
+        if (passwordRef.current.value !== password2Ref.current.value) {
+            await smalltalk.alert("Error", "Las contraseñas no son iguales.");
+        } else {
+            try {
+                await uploadVendedor(vendedor);
+
+                history.goBack();
+            } catch (err) {
+                await smalltalk.alert(
+                    "Error",
+                    "Ha ocurrido un error al agregar el vendedor."
+                );
+            }
         }
     };
 
@@ -57,6 +68,24 @@ export default function AgregarVendedor() {
                     required
                 />
                 <Input
+                    type="password"
+                    placeholder="Contraseña"
+                    onChange={handleChange}
+                    ref={passwordRef}
+                    required
+                />
+                <Input
+                    type="password"
+                    placeholder="Repita la contraseña"
+                    onChange={handleChange}
+                    ref={password2Ref}
+                    required
+                />
+                <Select ref={rolRef} onChange={handleChange} required>
+                    <option key="vendedor">vendedor</option>
+                    <option key="admin">admin</option>
+                </Select>
+                <Input
                     type="date"
                     placeholder="Antiguedad"
                     onChange={handleChange}
@@ -76,7 +105,17 @@ export default function AgregarVendedor() {
         </Container>
     );
 }
-
+const Select = styled.select`
+    width: 80%;
+    max-width: 500px;
+    margin: 5vh;
+    height: 5vh;
+    border-radius: 5vh;
+    border: 2px solid tomato;
+    padding: 1vh;
+    outline: none;
+    background-color: white;
+`;
 const Container = styled.div`
     display: flex;
     width: 100%;

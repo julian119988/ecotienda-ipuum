@@ -8,6 +8,7 @@ const {
     deleteTodo,
     uploadVendedor,
     getVendedores,
+    checkPass,
     deleteVendedor,
     updateProducto,
     deleteProducto,
@@ -20,8 +21,9 @@ router.post("/todo", uploadTodo);
 router.get("/todo", getTodos);
 router.delete("/todo", deleteTodo);
 
-router.post("/vendedor", uploadVendedor);
 router.get("/vendedor", getVendedores);
+router.post("/vendedor/:nombre", checkPass);
+router.post("/vendedor", uploadVendedor);
 router.delete("/vendedor", deleteVendedor);
 
 router.get("/productos/:busqueda", getProductos);
