@@ -226,3 +226,46 @@ export const deleteFraccionamiento = async (req, res, next) => {
         next(err);
     }
 };
+export const postVenta = async (req, res, next) => {
+    const { productos } = await req.body;
+
+    try {
+        const available = await checkStock(productos);
+        if (available) {
+            res.send({ message: "Se ha realizado la venta." });
+        } else {
+            res.status(418).send({ message: "No hay stock disponible." });
+        }
+    } catch (err) {
+        res.status(413).send(err);
+        next(err);
+    }
+};
+
+async function checkStock(productos) {
+    var isCorrect = true;
+    const savedProducts = await Promise.all(
+        productos.map(async (producto) => {
+            const response = await ProductosModel.findById(producto._id);
+            if (response.cantidad < producto.cantidad) isCorrect = false;
+            return response;
+        })
+    );
+    if (isCorrect) {
+        try {
+            productos.map(async (producto) => {
+                savedProducts.forEach(async (savedProduct) => {
+                    if (producto._id == savedProduct._id) {
+                        await ProductosModel.findByIdAndUpdate(producto._id, {
+                            cantidad: savedProduct.cantidad - producto.cantidad,
+                        });
+                    }
+                });
+            });
+            return true;
+        } catch (err) {
+            return false;
+        }
+    }
+    return false;
+}

@@ -25,7 +25,11 @@ export default function AdministarProductos() {
             setIsLoading(false);
         }
         const delayDebounceFn = setTimeout(() => {
-            if (busqueda) fetchProductos(busqueda);
+            if (busqueda) {
+                fetchProductos(busqueda);
+            } else {
+                setProductos([]);
+            }
         }, 200);
         return () => clearTimeout(delayDebounceFn);
     }, [busqueda]);
@@ -375,7 +379,6 @@ const Td = styled.td`
     max-width: 150px;
     text-align: center;
     ${(props) => props.short && "width: 100px; margin: 0; padding: 0;"}
-
     ${(props) => !props.hoverable && `background-color: aliceblue;`}
     &:hover {
         ${(props) =>

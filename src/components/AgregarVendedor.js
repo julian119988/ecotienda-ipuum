@@ -4,6 +4,8 @@ import { uploadVendedor } from "../services/apiCalls";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useHistory } from "react-router-dom";
 import smalltalk from "smalltalk";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 
 export default function AgregarVendedor() {
     const [vendedor, setVendedor] = useState({
@@ -12,6 +14,7 @@ export default function AgregarVendedor() {
         password: "",
         rol: "",
     });
+    const [mostrarPass, setMostrarPass] = useState(false);
     const nombreRef = useRef();
     const antiguedadRef = useRef();
     const passwordRef = useRef();
@@ -67,20 +70,44 @@ export default function AgregarVendedor() {
                     ref={nombreRef}
                     required
                 />
-                <Input
-                    type="password"
-                    placeholder="Contraseña"
-                    onChange={handleChange}
-                    ref={passwordRef}
-                    required
-                />
-                <Input
-                    type="password"
-                    placeholder="Repita la contraseña"
-                    onChange={handleChange}
-                    ref={password2Ref}
-                    required
-                />
+                <LittleContainer>
+                    <Input
+                        type={mostrarPass ? "text" : "password"}
+                        placeholder="Contraseña"
+                        onChange={handleChange}
+                        ref={passwordRef}
+                        required
+                        style={{ width: "100%", margin: "0" }}
+                    />
+                    {mostrarPass ? (
+                        <Icon onClick={() => setMostrarPass(false)}>
+                            <VisibilityOffIcon />
+                        </Icon>
+                    ) : (
+                        <Icon onClick={() => setMostrarPass(true)}>
+                            <VisibilityIcon />
+                        </Icon>
+                    )}
+                </LittleContainer>
+                <LittleContainer>
+                    <Input
+                        type={mostrarPass ? "text" : "password"}
+                        placeholder="Repita la contraseña"
+                        onChange={handleChange}
+                        ref={password2Ref}
+                        required
+                        style={{ width: "100%", margin: "0" }}
+                    />
+                    {mostrarPass ? (
+                        <Icon onClick={() => setMostrarPass(false)}>
+                            <VisibilityOffIcon />
+                        </Icon>
+                    ) : (
+                        <Icon onClick={() => setMostrarPass(true)}>
+                            <VisibilityIcon />
+                        </Icon>
+                    )}
+                </LittleContainer>
                 <Select ref={rolRef} onChange={handleChange} required>
                     <option key="vendedor">vendedor</option>
                     <option key="admin">admin</option>
@@ -105,10 +132,31 @@ export default function AgregarVendedor() {
         </Container>
     );
 }
+const LittleContainer = styled.div`
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 500px;
+    margin: 2.5vh;
+`;
+const Icon = styled.div`
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 3vh;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
 const Select = styled.select`
     width: 80%;
     max-width: 500px;
-    margin: 5vh;
+    margin: 2.5vh;
     height: 5vh;
     border-radius: 5vh;
     border: 2px solid tomato;
@@ -135,7 +183,7 @@ const Form = styled.form`
 const Input = styled.input`
     width: 80%;
     max-width: 500px;
-    margin: 5vh;
+    margin: 2.5vh;
     height: 5vh;
     border-radius: 5vh;
     border: 2px solid tomato;

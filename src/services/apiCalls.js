@@ -140,6 +140,18 @@ export const deleteFraccionamiento = async (id) => {
         await api.delete("/fraccionamiento", { data: { id: id } });
         return true;
     } catch (err) {
+        return err.message;
+    }
+};
+
+//Ventas
+export const postVenta = async (productos) => {
+    try {
+        await smalltalk.confirm("Confirmar", "Realizar compra?");
+        const response = await api.post("/ventas", { productos });
+        return true;
+    } catch (err) {
+        console.log(err.response);
         return false;
     }
 };
