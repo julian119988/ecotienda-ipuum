@@ -5,7 +5,7 @@ const fraccionamientoSchema = new Schema({
     nombre: String,
     descripcion: String,
     ganancia: Number,
-    fecha: Date,
+    fecha: { type: Date, default: Date.now },
     cantidad: Number,
 });
 

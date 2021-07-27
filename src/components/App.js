@@ -39,10 +39,13 @@ const GlobalStyle = createGlobalStyle`
 
 export default function App() {
     const [user, setUser] = React.useState(undefined);
+    const [isFeria, setIsFeria] = React.useState("local");
 
     React.useEffect(() => {
         const us = localStorage.getItem("user");
+        const isF = localStorage.getItem("isFeria");
         setUser(JSON.parse(us));
+        setIsFeria(isF);
     }, []);
 
     const defineUser = (usuarioIngresado) => {
@@ -51,7 +54,20 @@ export default function App() {
     };
     const logOut = () => {
         localStorage.removeItem("user");
+        localStorage.removeItem("isFeria");
+        setIsFeria("local");
         setUser(undefined);
+    };
+    const toggleFeria = () => {
+        if (isFeria === "local") {
+            setIsFeria("feria");
+            localStorage.setItem("isFeria", "feria");
+            return "Feria";
+        } else {
+            setIsFeria("local");
+            localStorage.setItem("isFeria", "local");
+            return "Local";
+        }
     };
 
     return (
@@ -73,13 +89,18 @@ export default function App() {
                     ) : user.rol === "admin" ? (
                         <>
                             <Navbar isAdmin />
-                            <StatusBar user={user} logOut={logOut} />
-                            <Route exact path="/" component={Home} />
-                            <Route
-                                path="/administrar-productos"
-                                component={AdministrarProductos}
+                            <StatusBar
+                                user={user}
+                                logOut={logOut}
+                                toggleFeria={toggleFeria}
                             />
-                            <Route path="/vender" component={Vender} />
+                            <Route exact path="/" component={Home} />
+                            <Route path="/administrar-productos">
+                                <AdministrarProductos user={user} />
+                            </Route>
+                            <Route path="/vender">
+                                <Vender isFeria={isFeria} user={user} />
+                            </Route>
                             <Route
                                 path="/contabilidad"
                                 component={Contabilidad}
@@ -113,10 +134,16 @@ export default function App() {
                     ) : (
                         <>
                             <Navbar />
-                            <StatusBar user={user} logOut={logOut} />
+                            <StatusBar
+                                user={user}
+                                logOut={logOut}
+                                toggleFeria={toggleFeria}
+                            />
                             <Route exact path="/" component={Home} />
 
-                            <Route path="/vender" component={Vender} />
+                            <Route path="/vender">
+                                <Vender isFeria={isFeria} user={user} />
+                            </Route>
 
                             <Route
                                 path="/fraccionamiento"

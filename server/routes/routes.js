@@ -16,6 +16,7 @@ const {
     postFraccionamiento,
     deleteFraccionamiento,
     postVenta,
+    getHistorial,
 } = require("../controllers/controllers");
 
 router.post("/todo", uploadTodo);
@@ -38,5 +39,7 @@ router.post("/fraccionamiento", postFraccionamiento);
 router.delete("/fraccionamiento", deleteFraccionamiento);
 
 router.post("/ventas", postVenta);
+
+router.get("/historial", getHistorial);
 
 module.exports = router;

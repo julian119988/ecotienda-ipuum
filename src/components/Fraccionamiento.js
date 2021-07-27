@@ -59,8 +59,8 @@ export default function AdministarVendedores() {
                         <Tr>
                             <Th>Nombre</Th>
                             <Th>Descripcion</Th>
-                            <Th>Ganancia</Th>
                             <Th>Cantidad</Th>
+                            <Th>Total</Th>
                             <Th>Fecha</Th>
                             <Th delete>Eliminar Fraccionamiento</Th>
                         </Tr>

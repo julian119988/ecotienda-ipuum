@@ -98,7 +98,7 @@ export default function AgregarVendedor() {
                 />
                 <Input
                     type="number"
-                    placeholder="Ganancia"
+                    placeholder="Precio unitario"
                     onChange={handleChange}
                     ref={gananciaRef}
                     required

@@ -12,7 +12,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import { useHistory } from "react-router";
 
-export default function AdministarProductos() {
+export default function AdministarProductos(props) {
     const [productos, setProductos] = useState([]);
     const [busqueda, setBusqueda] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +62,8 @@ export default function AdministarProductos() {
         }
     };
 
-    const editarCampo = async (campo, id, current, literal, opt) => {
+    const editarCampo = async (campo, product, current, literal, opt) => {
+        const id = product._id;
         let tipo = "number";
         let seguir = true;
         let response;
@@ -78,29 +79,71 @@ export default function AdministarProductos() {
             }
             if (tipo === "number") {
                 if (campo === "Cantidad") {
-                    await updateProducto({
-                        _id: id,
-                        [literal]: parseInt(response),
-                    });
+                    await updateProducto(
+                        {
+                            _id: id,
+                            [literal]: parseInt(response),
+                        },
+                        {
+                            _id: id,
+                            [literal]: parseInt(current),
+                            producto: product.producto,
+                            user: props.user,
+                            campo: literal,
+                        }
+                    );
                 } else if (campo === "Precio de compra") {
-                    await updateProducto({
-                        _id: id,
-                        [literal]: parseInt(response),
-                        precioVenta:
-                            (parseInt(response) * parseInt(opt)) / 100 +
-                            parseInt(response),
-                    });
+                    await updateProducto(
+                        {
+                            _id: id,
+                            [literal]: parseInt(response),
+                            precioVenta:
+                                (parseInt(response) * parseInt(opt)) / 100 +
+                                parseInt(response),
+                        },
+                        {
+                            _id: id,
+                            [literal]: parseInt(current),
+                            precioVenta:
+                                (parseInt(current) * parseInt(opt)) / 100 +
+                                parseInt(current),
+                            producto: product.producto,
+                            user: props.user,
+                            campo: literal,
+                        }
+                    );
                 } else {
-                    await updateProducto({
-                        _id: id,
-                        [literal]: parseInt(response),
-                        precioVenta:
-                            (parseInt(opt) * parseInt(response)) / 100 +
-                            parseInt(opt),
-                    });
+                    await updateProducto(
+                        {
+                            _id: id,
+                            [literal]: parseInt(response),
+                            precioVenta:
+                                (parseInt(opt) * parseInt(response)) / 100 +
+                                parseInt(opt),
+                        },
+                        {
+                            _id: id,
+                            [literal]: parseInt(current),
+                            precioVenta:
+                                (parseInt(opt) * parseInt(current)) / 100 +
+                                parseInt(opt),
+                            producto: product.producto,
+                            user: props.user,
+                            campo: literal,
+                        }
+                    );
                 }
             } else {
-                await updateProducto({ _id: id, [literal]: response });
+                await updateProducto(
+                    { _id: id, [literal]: response },
+                    {
+                        _id: id,
+                        [literal]: current,
+                        producto: product.producto,
+                        user: props.user,
+                        campo: literal,
+                    }
+                );
             }
             await fetchProductos(busqueda);
         } catch (err) {
@@ -181,7 +224,7 @@ export default function AdministarProductos() {
                                 <Th style={{ width: "70px" }}>_id</Th>
                                 <Th>Producto</Th>
                                 <Th>Marca</Th>
-                                <Th>Cantidad</Th>
+                                <Th>Stock</Th>
                                 <Th>Precio compra</Th>
                                 <Th>Precio venta</Th>
                                 <Th>Porcentaje de ganancia</Th>
@@ -207,7 +250,7 @@ export default function AdministarProductos() {
                                             onClick={() =>
                                                 editarCampo(
                                                     "Producto",
-                                                    _id,
+                                                    product,
                                                     producto,
                                                     "producto"
                                                 )
@@ -218,7 +261,12 @@ export default function AdministarProductos() {
                                         </Td>
                                         <Td
                                             onClick={() =>
-                                                editarCampo("Marca", _id, marca)
+                                                editarCampo(
+                                                    "Marca",
+                                                    product,
+                                                    marca,
+                                                    "marca"
+                                                )
                                             }
                                             hoverable
                                         >
@@ -228,7 +276,7 @@ export default function AdministarProductos() {
                                             onClick={() =>
                                                 editarCampo(
                                                     "Cantidad",
-                                                    _id,
+                                                    product,
                                                     cantidad,
                                                     "cantidad"
                                                 )
@@ -241,7 +289,7 @@ export default function AdministarProductos() {
                                             onClick={() =>
                                                 editarCampo(
                                                     "Precio de compra",
-                                                    _id,
+                                                    product,
                                                     precioCompra,
                                                     "precioCompra",
                                                     porcentajeGanancia
@@ -257,7 +305,7 @@ export default function AdministarProductos() {
                                             onClick={() =>
                                                 editarCampo(
                                                     "Porcentaje de ganancia",
-                                                    _id,
+                                                    product,
                                                     porcentajeGanancia,
                                                     "porcentajeGanancia",
                                                     precioCompra

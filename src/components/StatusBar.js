@@ -5,6 +5,7 @@ import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 export default function StatusBar(props) {
     const [fecha, setFecha] = useState();
     const [tiempo, setTiempo] = useState();
+    const [isFeria, setIsFeria] = useState();
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -18,12 +19,26 @@ export default function StatusBar(props) {
     }, []);
 
     useEffect(() => {
+        const isF = localStorage.getItem("isFeria");
+        if (isF === null) {
+            setIsFeria("Local");
+        } else if (isF === "feria") {
+            setIsFeria("Feria");
+        } else {
+            setIsFeria("Local");
+        }
         setFecha(new Date().toLocaleDateString());
         setTiempo(new Date().toLocaleTimeString().slice(0, -3));
     }, []);
+    const handleClick = () => {
+        setIsFeria(props.toggleFeria());
+    };
     return (
         <GoBackBar>
             <Fecha>{`${fecha} ${tiempo}`}</Fecha>
+            <CambiarFeriaLocal onClick={handleClick} isFeria={isFeria}>
+                {isFeria}
+            </CambiarFeriaLocal>
             <UserInfo>{props.user.nombre}</UserInfo>
             <LogOutButton onClick={() => props.logOut()}>
                 Salir
@@ -34,6 +49,30 @@ export default function StatusBar(props) {
         </GoBackBar>
     );
 }
+const CambiarFeriaLocal = styled.button`
+    width: 10%;
+    height: 100%;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    outline: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 5vh 5vh 0 0;
+    ${(props) =>
+        props.isFeria === "Local"
+            ? "background-color: tomato;"
+            : `background-color: orange;
+                border: 1px solid white;
+`}
+    &:hover {
+        background-color: wheat;
+    }
+`;
 const Fecha = styled.div`
     width: 10%;
     height: 100%;
@@ -60,6 +99,8 @@ const LogOutButton = styled.button`
     transition: all 0.2s linear;
     border-radius: 5vh 0 0 0;
     font-weight: 900;
+    border-left: 1px solid white;
+    border-top: 1px solid white;
     &:active {
         color: black;
         background-color: red;

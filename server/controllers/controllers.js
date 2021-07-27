@@ -2,6 +2,7 @@ const ProductosModel = require("../models/ProductosModel");
 const TodoModel = require("../models/TodoModel");
 const VendedoresModel = require("../models/VendedoresModel");
 const FraccionamientoModel = require("../models/FraccionamientoModel");
+const HistorialModel = require("../models/HistorialModel");
 const bcrypt = require("bcrypt");
 
 export const getTodos = async (req, res, next) => {
@@ -41,16 +42,25 @@ export const deleteTodo = async (req, res, next) => {
 export const uploadVendedor = async (req, res, next) => {
     const { data } = await req.body;
     try {
-        bcrypt.hash(data.password, 11, async function (err, hash) {
-            const nuevoVendedor = new VendedoresModel({
-                nombre: data.nombre,
-                antiguedad: data.antiguedad,
-                password: hash,
-                rol: data.rol,
-            });
-            const isSaved = await nuevoVendedor.save();
-            res.send(isSaved);
+        const existeVendedor = await VendedoresModel.find({
+            nombre: data.nombre,
         });
+        if (!existeVendedor[0]) {
+            bcrypt.hash(data.password, 11, async function (err, hash) {
+                const nuevoVendedor = new VendedoresModel({
+                    nombre: data.nombre,
+                    antiguedad: data.antiguedad,
+                    password: hash,
+                    rol: data.rol,
+                });
+                const isSaved = await nuevoVendedor.save();
+                res.send(isSaved);
+            });
+        } else {
+            res.status(418).send({
+                message: "Ese nombre ya se encuentra registrado",
+            });
+        }
     } catch (err) {
         res.status(413).send(err);
         next(err);
@@ -175,10 +185,20 @@ export const deleteProducto = async (req, res, next) => {
 };
 export const updateProducto = async (req, res, next) => {
     const { id } = await req.params;
-    const { producto } = await req.body;
+    const { producto, productoAntiguo } = await req.body;
     try {
         const isUpdated = await ProductosModel.findByIdAndUpdate(id, producto);
-        res.send(isUpdated);
+        const newHistory = new HistorialModel({
+            tipo: "producto",
+            responsable: productoAntiguo.user.nombre,
+            descripcion: `Producto: ${productoAntiguo.producto}. ${
+                productoAntiguo.campo
+            } cambio de: ${productoAntiguo[productoAntiguo.campo]}. A: ${
+                producto[productoAntiguo.campo]
+            }`,
+        });
+        const historyIsSaved = await newHistory.save();
+        res.send({ isUpdated, historyIsSaved });
     } catch (err) {
         res.status(413).send(err);
         next(err);
@@ -201,12 +221,19 @@ export const postFraccionamiento = async (req, res, next) => {
         const nuevoFraccionamiento = new FraccionamientoModel({
             nombre,
             descripcion,
-            ganancia,
+            ganancia: parseInt(ganancia) * parseInt(cantidad),
             cantidad,
             fecha,
         });
         const isSaved = await nuevoFraccionamiento.save();
-        res.send(isSaved);
+        const newHistory = new HistorialModel({
+            tipo: "fraccionamiento",
+            responsable: nombre,
+            descripcion: `Producto: ${descripcion}. Cantidad: ${cantidad}. Dia del fraccionamiento: ${fecha}`,
+            total: parseInt(ganancia) * parseInt(cantidad),
+        });
+        const historyIsSaved = await newHistory.save();
+        res.send({ isSaved, historyIsSaved });
     } catch (err) {
         res.status(413).send(
             "Ha ocurrido un error guardando el fraccionamiento."
@@ -227,12 +254,12 @@ export const deleteFraccionamiento = async (req, res, next) => {
     }
 };
 export const postVenta = async (req, res, next) => {
-    const { productos } = await req.body;
-
+    const { productos, isFeria, user } = await req.body;
     try {
         const available = await checkStock(productos);
         if (available) {
             res.send({ message: "Se ha realizado la venta." });
+            calcularInfoVenta(productos, isFeria, user);
         } else {
             res.status(418).send({ message: "No hay stock disponible." });
         }
@@ -269,3 +296,57 @@ async function checkStock(productos) {
     }
     return false;
 }
+
+const calcularInfoVenta = async (productos, isFeria, user) => {
+    var total = 0;
+    var descripcion = "";
+    productos.map((producto) => {
+        descripcion += `Producto: ${producto.producto}. Marca: ${producto.marca}. Cantidad vendida: ${producto.cantidad}. Precio de venta: ${producto.precioVenta}. Porcentaje de ganancia: ${producto.porcentajeGanancia} <br/>`;
+        total += producto.cantidad * producto.precioVenta;
+    });
+    console.log(productos, isFeria, user);
+    const nuevoHistorial = new HistorialModel({
+        tipo: "venta",
+        responsable: user.nombre,
+        descripcion: descripcion,
+        opcional: isFeria,
+        total: total,
+    });
+    const isSaved = await nuevoHistorial.save();
+};
+
+export const getHistorial = async (req, res, next) => {
+    const { fecha, tipo, responsable } = req.query;
+    try {
+        const historial = await HistorialModel.find({
+            $and: [
+                fecha === "todos"
+                    ? {}
+                    : {
+                          $expr: {
+                              $and: [
+                                  {
+                                      $eq: [
+                                          { $month: "$createdAt" },
+                                          parseInt(fecha),
+                                      ],
+                                  },
+                                  {
+                                      $eq: [
+                                          { $year: "$createdAt" },
+                                          new Date().getFullYear(),
+                                      ],
+                                  },
+                              ],
+                          },
+                      },
+                tipo === "todos" ? {} : { tipo: tipo },
+                responsable === "todos" ? {} : { responsable: responsable },
+            ],
+        });
+        res.send(historial);
+    } catch (err) {
+        res.status(418).send(err);
+        next(err);
+    }
+};

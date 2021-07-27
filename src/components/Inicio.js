@@ -8,7 +8,7 @@ import smalltalk from "smalltalk";
 
 export default function Inicio(props) {
     const [estado, setEstado] = useState(undefined);
-    const [vendedores, setVendedores] = useState(undefined);
+    const [vendedores, setVendedores] = useState([]);
     const [mostrarPass, setMostrarPass] = useState(false);
     const history = useHistory();
 

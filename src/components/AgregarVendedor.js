@@ -38,7 +38,6 @@ export default function AgregarVendedor() {
         } else {
             try {
                 await uploadVendedor(vendedor);
-
                 history.goBack();
             } catch (err) {
                 await smalltalk.alert(

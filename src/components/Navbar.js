@@ -13,6 +13,10 @@ export default function Navbar(props) {
                             exact={true}
                             activeStyle={{
                                 backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 5vh 0",
                             }}
                         >
                             Home
@@ -23,6 +27,10 @@ export default function Navbar(props) {
                             to="vender"
                             activeStyle={{
                                 backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 5vh 5vh",
                             }}
                         >
                             Vender
@@ -33,6 +41,10 @@ export default function Navbar(props) {
                             to="administrar-productos"
                             activeStyle={{
                                 backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 5vh 5vh",
                             }}
                         >
                             Administar Productos
@@ -43,6 +55,10 @@ export default function Navbar(props) {
                             to="administrar-vendedores"
                             activeStyle={{
                                 backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 5vh 5vh",
                             }}
                         >
                             Administar Vendedores
@@ -53,6 +69,10 @@ export default function Navbar(props) {
                             to="historial"
                             activeStyle={{
                                 backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 5vh 5vh",
                             }}
                         >
                             Historial
@@ -64,6 +84,10 @@ export default function Navbar(props) {
                             to="contabilidad"
                             activeStyle={{
                                 backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 5vh 5vh",
                             }}
                         >
                             Contabilidad
@@ -74,6 +98,10 @@ export default function Navbar(props) {
                             to="fraccionamiento"
                             activeStyle={{
                                 backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 0 5vh",
                             }}
                         >
                             Fraccionamiento
@@ -88,6 +116,10 @@ export default function Navbar(props) {
                             exact={true}
                             activeStyle={{
                                 backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 5vh 0",
                             }}
                         >
                             Home
@@ -98,6 +130,10 @@ export default function Navbar(props) {
                             to="vender"
                             activeStyle={{
                                 backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 5vh 5vh",
                             }}
                         >
                             Vender
@@ -108,6 +144,10 @@ export default function Navbar(props) {
                             to="fraccionamiento"
                             activeStyle={{
                                 backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 0 5vh",
                             }}
                         >
                             Fraccionamiento
@@ -145,6 +185,7 @@ const ItemList = styled.li`
     padding: 0;
     width: 100%;
     height: 100%;
+
     a {
         text-decoration: none;
         width: 100%;
@@ -154,6 +195,8 @@ const ItemList = styled.li`
         justify-content: center;
         color: white;
         text-align: center;
+        transition: border-radius 100ms linear;
+        border-radius: 0 0 5vh 5vh;
         &:hover {
             background-color: wheat;
         }

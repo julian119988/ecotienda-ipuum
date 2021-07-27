@@ -6,9 +6,8 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import smalltalk from "smalltalk";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
 
-export default function Vender() {
+export default function Vender(props) {
     const [productos, setProductos] = useState([]);
     const [busqueda, setBusqueda] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -148,7 +147,6 @@ export default function Vender() {
                         tempCarritoArray[index].cantidad = parseInt(res);
                         setCarrito(tempCarritoArray);
                         calcularTotal();
-                        console.log(tempCarritoArray);
                         seguir = false;
                     }
                 }
@@ -157,13 +155,18 @@ export default function Vender() {
     };
 
     const handleVenta = async () => {
-        const res = await postVenta(carrito);
-        if (res === true) {
-            smalltalk.alert("Exito", "Se ha realizado la compra");
-            fetchProductos(busqueda);
-            setCarrito([]);
-        } else {
-            smalltalk.alert("Error", "No se ha podido realiar la compra.");
+        try {
+            const res = await postVenta(carrito, props.isFeria, props.user);
+            if (res === true) {
+                await smalltalk.alert("Exito", "Se ha realizado la compra");
+                fetchProductos(busqueda);
+                setCarrito([]);
+            } else {
+                console.log("No se ha podido realiar la compra");
+            }
+        } catch (err) {
+            smalltalk.alert("Error", "No se ha podido realiar la compra");
+            console.log(err);
         }
     };
     return (
@@ -205,7 +208,7 @@ export default function Vender() {
                             <Tr>
                                 <Th>Producto</Th>
                                 <Th>Marca</Th>
-                                <Th>Cantidad</Th>
+                                <Th>Stock</Th>
                                 <Th>Precio venta</Th>
                                 <Th short>Agregar</Th>
                             </Tr>
@@ -250,7 +253,7 @@ export default function Vender() {
                         <Table>
                             <Thead>
                                 <Tr>
-                                    <Th colSpan="7">Carrito</Th>
+                                    <Th colSpan="6">Carrito</Th>
                                 </Tr>
                                 <Tr>
                                     <Th>Producto</Th>
@@ -258,7 +261,6 @@ export default function Vender() {
                                     <Th>Cantidad</Th>
                                     <Th>Precio unitario</Th>
                                     <Th>Precio parcial</Th>
-                                    <Th short>Editar</Th>
                                     <Th short>Eliminar</Th>
                                 </Tr>
                             </Thead>
@@ -310,20 +312,7 @@ export default function Vender() {
                                                 {parseInt(cantidad) *
                                                     parseInt(precioVenta)}
                                             </Td>
-                                            <Td
-                                                short
-                                                onClick={() =>
-                                                    editPrecioFromCarrito(
-                                                        _id,
-                                                        precioCompra,
-                                                        porcentajeGanancia
-                                                    )
-                                                }
-                                            >
-                                                <Button edit>
-                                                    <EditIcon />
-                                                </Button>
-                                            </Td>
+
                                             <Td
                                                 short
                                                 onClick={() =>
@@ -341,11 +330,11 @@ export default function Vender() {
                             <Tfoot>
                                 <Tr>
                                     <Td colSpan="4">Total</Td>
-                                    <Td colSpan="3">{total}</Td>
+                                    <Td colSpan="2">{total}</Td>
                                 </Tr>
                                 <Tr>
                                     <Td
-                                        colSpan="7"
+                                        colSpan="6"
                                         style={{ margin: "0", padding: "0" }}
                                     >
                                         <RealizarCompra

@@ -92,10 +92,11 @@ export const uploadProducto = async (producto) => {
         return err;
     }
 };
-export const updateProducto = async (producto) => {
+export const updateProducto = async (producto, productoAntiguo) => {
     try {
         const response = await api.patch(`/productos/${producto._id}`, {
             producto,
+            productoAntiguo,
         });
         return response;
     } catch (err) {
@@ -145,13 +146,28 @@ export const deleteFraccionamiento = async (id) => {
 };
 
 //Ventas
-export const postVenta = async (productos) => {
+export const postVenta = async (productos, isFeria, user) => {
     try {
         await smalltalk.confirm("Confirmar", "Realizar compra?");
-        const response = await api.post("/ventas", { productos });
+        const response = await api.post("/ventas", {
+            productos,
+            isFeria,
+            user,
+        });
         return true;
     } catch (err) {
         console.log(err.response);
         return false;
+    }
+};
+
+//
+export const getHistorial = async (query) => {
+    try {
+        const response = await api.get("/historial", { params: query });
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err;
     }
 };
