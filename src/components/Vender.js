@@ -6,8 +6,6 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import smalltalk from "smalltalk";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { PDFViewer } from "@react-pdf/renderer";
-import Factura from "./Factura";
 
 export default function Vender(props) {
     const [productos, setProductos] = useState([]);
@@ -15,7 +13,6 @@ export default function Vender(props) {
     const [isLoading, setIsLoading] = useState(false);
     const [carrito, setCarrito] = useState([]);
     const [total, setTotal] = useState(0);
-    const [factura, setFactura] = useState(false);
 
     useEffect(() => {
         if (busqueda) {
@@ -164,7 +161,6 @@ export default function Vender(props) {
                 await smalltalk.alert("Exito", "Se ha realizado la compra");
                 fetchProductos(busqueda);
                 // Crear pdf
-                setFactura(true);
                 setCarrito([]);
             } else {
                 console.log("No se ha podido realiar la compra");
@@ -183,11 +179,6 @@ export default function Vender(props) {
                     placeholder="Buscar un producto..."
                     autoFocus
                 />
-                {factura && (
-                    <PDFViewer>
-                        <Factura />
-                    </PDFViewer>
-                )}
                 {isLoading ? (
                     <Center>
                         <Loader
