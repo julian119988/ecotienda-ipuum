@@ -1,5 +1,11 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog } = require("electron");
+const {
+    app,
+    BrowserWindow,
+    dialog,
+    ipcMain,
+    webContents,
+} = require("electron");
 const isDev = require("electron-is-dev");
 const path = require("path");
 const url = require("url");
@@ -7,7 +13,20 @@ const url = require("url");
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-
+var options = {
+    silent: false,
+    printBackground: true,
+    color: false,
+    margin: {
+        marginType: "printableArea",
+    },
+    landscape: false,
+    pagesPerSheet: 1,
+    collate: false,
+    copies: 1,
+    header: "Header of the Page",
+    footer: "Footer of the Page",
+};
 function createWindow() {
     // express server is started here when production build
     if (!isDev) {
@@ -21,12 +40,30 @@ function createWindow() {
         icon: "./resources/leaves.png",
         webPreferences: {
             nodeIntegration: true,
+            nativeWindowOpen: true,
         },
         autoHideMenuBar: true,
     });
 
     // and load the index.html of the app.
-
+    mainWindow.webContents.on(
+        "new-window",
+        (event, url, frameName, disposition, options, additionalFeatures) => {
+            // This is the name we chose for our window. You can have multiple names for
+            // multiple windows and each have their options
+            if (frameName === "Factura") {
+                event.preventDefault();
+                Object.assign(options, {
+                    // This will prevent interactions with the mainWindow
+                    parent: mainWindow,
+                    width: 625,
+                    height: 500,
+                    // You can also set `left` and `top` positions
+                });
+                event.newGuest = new BrowserWindow(options);
+            }
+        }
+    );
     mainWindow.loadURL(
         isDev
             ? "http://localhost:3000"
@@ -59,7 +96,14 @@ function createWindow() {
         mainWindow = null;
     });
 }
+ipcMain.on("imprimir", (event, arg) => {
+    let win = BrowserWindow.getFocusedWindow();
+    win.webContents.print(options, (success, failureReason) => {
+        if (!success) console.log(failureReason);
 
+        console.log("Print Initiated");
+    });
+});
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

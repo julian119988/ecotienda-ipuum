@@ -6,6 +6,7 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import smalltalk from "smalltalk";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import DeleteIcon from "@material-ui/icons/Delete";
+const { ipcRenderer } = window.require("electron");
 
 export default function Vender(props) {
     const [productos, setProductos] = useState([]);
@@ -161,6 +162,7 @@ export default function Vender(props) {
                 await smalltalk.alert("Exito", "Se ha realizado la compra");
                 fetchProductos(busqueda);
                 // Crear pdf
+                generarFactura();
                 setCarrito([]);
             } else {
                 console.log("No se ha podido realiar la compra");
@@ -169,6 +171,132 @@ export default function Vender(props) {
             smalltalk.alert("Error", "No se ha podido realiar la compra");
             console.log(err);
         }
+    };
+
+    const generarFactura = () => {
+        const headers = [
+            "Producto",
+            "Marca",
+            "Precio unitario",
+            "Cantidad",
+            "Total",
+        ];
+        const titulo = document.createElement("h1");
+        const fecha = document.createElement("h4");
+        titulo.textContent = "Ecotienda IPUUM";
+        titulo.setAttribute(
+            "style",
+            "marginLeft: auto; marginRight: auto; marginTop: 30px;"
+        );
+        fecha.textContent = `${new Date().toDateString()}  ${new Date()
+            .toTimeString()
+            .slice(0, 5)}`;
+        const childWindow = window.open("", "Factura");
+        const printButton = document.createElement("button");
+        const table = document.createElement("table");
+        const thead = document.createElement("thead");
+        const tbody = document.createElement("tbody");
+        const tfoot = document.createElement("tfoot");
+        const trh = document.createElement("tr");
+        headers.forEach((campo) => {
+            const th = document.createElement("th");
+            th.textContent = campo;
+            th.setAttribute(
+                "style",
+                "border: 0 0 1px 0; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+            );
+            trh.appendChild(th);
+        });
+        thead.appendChild(trh);
+        carrito.forEach((producto) => {
+            const trb = document.createElement("tr");
+            const tdProducto = document.createElement("td");
+            const tdMarca = document.createElement("td");
+            const tdPrecio = document.createElement("td");
+            const tdCantidad = document.createElement("td");
+            const tdTotal = document.createElement("td");
+            tdProducto.textContent = producto.producto;
+            tdProducto.setAttribute(
+                "style",
+                "border: 0 0 0 1px; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+            );
+            tdProducto.setAttribute(
+                "style",
+                "border: 0 1px 0 0; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+            );
+            tdMarca.textContent = producto.marca;
+            tdMarca.setAttribute(
+                "style",
+                "border: 0 0 0 1px; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+            );
+            tdMarca.setAttribute(
+                "style",
+                "border: 0 1px 0 0; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+            );
+            tdPrecio.textContent = "$ " + producto.precioVenta.toString();
+            tdPrecio.setAttribute(
+                "style",
+                "border: 0 0 0 1px; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+            );
+            tdPrecio.setAttribute(
+                "style",
+                "border: 0 1px 0 0; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+            );
+            tdCantidad.textContent = producto.cantidad.toString();
+            tdCantidad.setAttribute(
+                "style",
+                "border: 0 0 0 1px; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+            );
+            tdCantidad.setAttribute(
+                "style",
+                "border: 0 1px 0 0; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+            );
+            tdTotal.textContent =
+                "$ " + (producto.precioVenta * producto.cantidad).toString();
+            tdTotal.setAttribute(
+                "style",
+                "border: 0 0 0 1px; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+            );
+            tdTotal.setAttribute(
+                "style",
+                "border: 0 1px 0 0; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+            );
+            trb.appendChild(tdProducto);
+            trb.appendChild(tdMarca);
+            trb.appendChild(tdPrecio);
+            trb.appendChild(tdCantidad);
+            trb.appendChild(tdTotal);
+            tbody.appendChild(trb);
+        });
+        const trf = document.createElement("tr");
+        const tfTotalString = document.createElement("td");
+        const tfTotal = document.createElement("td");
+        tfTotalString.setAttribute("colspan", "4");
+        tfTotalString.setAttribute(
+            "style",
+            "border: 0 1px 0 0; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+        );
+        tfTotalString.textContent = "Total";
+        tfTotal.setAttribute(
+            "style",
+            "border: 0 1px 0 0; border-style:solid; border-color:gray;padding:10px;min-width:max-content;"
+        );
+        tfTotal.textContent = "$ " + total.toString();
+        trf.appendChild(tfTotalString);
+        trf.appendChild(tfTotal);
+        tfoot.appendChild(trf);
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        table.appendChild(tfoot);
+        printButton.addEventListener("click", () => {
+            ipcRenderer.send("imprimir", childWindow.document.body.innerText);
+        });
+        table.id = "imprimirTabla";
+        printButton.textContent = "Imprimir";
+        childWindow.document.body.appendChild(titulo);
+        childWindow.document.body.appendChild(fecha);
+        childWindow.document.body.appendChild(table);
+        childWindow.document.body.appendChild(printButton);
     };
     return (
         <Container>
@@ -179,6 +307,7 @@ export default function Vender(props) {
                     placeholder="Buscar un producto..."
                     autoFocus
                 />
+
                 {isLoading ? (
                     <Center>
                         <Loader
