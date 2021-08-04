@@ -45,7 +45,11 @@ export default function App() {
         const us = localStorage.getItem("user");
         const isF = localStorage.getItem("isFeria");
         setUser(JSON.parse(us));
-        setIsFeria(isF);
+        if (isF === null) {
+            setIsFeria("local");
+        } else {
+            setIsFeria(isF);
+        }
     }, []);
 
     const defineUser = (usuarioIngresado) => {
