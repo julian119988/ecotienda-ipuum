@@ -21,6 +21,7 @@ import AgregarProducto from "./AgregarProducto";
 import AgregarFraccionamiento from "./AgregarFraccionamiento";
 import Inicio from "./Inicio";
 import StatusBar from "./StatusBar";
+import smalltalk from "smalltalk";
 
 const GlobalStyle = createGlobalStyle`
   html, body, #root {
@@ -40,10 +41,13 @@ const GlobalStyle = createGlobalStyle`
 export default function App() {
     const [user, setUser] = React.useState(undefined);
     const [isFeria, setIsFeria] = React.useState("local");
+    const [caja, setCaja] = React.useState(null);
 
     React.useEffect(() => {
         const us = localStorage.getItem("user");
         const isF = localStorage.getItem("isFeria");
+        const cajaIniciada = localStorage.getItem("caja");
+        setCaja(cajaIniciada);
         setUser(JSON.parse(us));
         if (isF === null) {
             setIsFeria("local");
@@ -56,11 +60,23 @@ export default function App() {
         setUser(usuarioIngresado);
         localStorage.setItem("user", JSON.stringify(usuarioIngresado));
     };
-    const logOut = () => {
-        localStorage.removeItem("user");
-        localStorage.removeItem("isFeria");
-        setIsFeria("local");
-        setUser(undefined);
+    const logOut = async () => {
+        const isCaja = localStorage.getItem("caja");
+        if (isCaja === null) {
+            localStorage.removeItem("user");
+            localStorage.removeItem("isFeria");
+            setIsFeria("local");
+            setUser(undefined);
+        } else {
+            try {
+                await smalltalk.alert(
+                    "Cerrar caja",
+                    "Error, debe cerrar caja antes de salir."
+                );
+            } catch (err) {
+                console.log(err);
+            }
+        }
     };
     const toggleFeria = () => {
         if (isFeria === "local") {

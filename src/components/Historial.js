@@ -257,31 +257,176 @@ export default function Historial() {
                                             total,
                                             createdAt,
                                         } = registro;
-                                        return (
-                                            <Tr hoverable key={_id}>
-                                                <Td hoverable>
-                                                    {new Date(
-                                                        createdAt
-                                                    ).getDate()}
-                                                </Td>
-                                                <Td hoverable>
-                                                    {`${new Date(
-                                                        createdAt
-                                                    ).getHours()}:${new Date(
-                                                        createdAt
-                                                    ).getMinutes()}`}
-                                                </Td>
-                                                <Td hoverable>{tipo}</Td>
-                                                <Td hoverable>{responsable}</Td>
-                                                <Td hoverable>{descripcion}</Td>
-                                                <Td hoverable>
-                                                    {opcional ? opcional : "-"}
-                                                </Td>
-                                                <Td hoverable>
-                                                    {total ? total : "-"}
-                                                </Td>
-                                            </Tr>
-                                        );
+                                        function returnBackgroundColor() {
+                                            if (tipo === "venta") {
+                                                return "background-color: lightgoldenrodyellow;";
+                                            } else if (tipo === "producto") {
+                                                return "background-color: lightcoral;";
+                                            } else if (tipo === "caja") {
+                                                return "background-color: yellowgreen;";
+                                            } else {
+                                                return "background-color: lightskyblue;";
+                                            }
+                                        }
+
+                                        if (tipo === "venta") {
+                                            const descripcionJson =
+                                                JSON.parse(descripcion);
+                                            return (
+                                                <Tr
+                                                    hoverable
+                                                    key={_id}
+                                                    tipo={returnBackgroundColor}
+                                                >
+                                                    <Td hoverable>
+                                                        {new Date(
+                                                            createdAt
+                                                        ).getDate()}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        {`${new Date(
+                                                            createdAt
+                                                        ).getHours()}:${
+                                                            (new Date(
+                                                                createdAt
+                                                            ).getMinutes() < 10
+                                                                ? "0"
+                                                                : "") +
+                                                            new Date(
+                                                                createdAt
+                                                            ).getMinutes()
+                                                        }`}
+                                                    </Td>
+                                                    <Td hoverable>{tipo}</Td>
+                                                    <Td hoverable>
+                                                        {responsable}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        {descripcionJson.map(
+                                                            (
+                                                                product,
+                                                                index
+                                                            ) => {
+                                                                const {
+                                                                    producto,
+                                                                    cantidad,
+                                                                    marca,
+                                                                    precioVenta,
+                                                                    porcentajeGanancia,
+                                                                } =
+                                                                    product.producto;
+
+                                                                return (
+                                                                    <div
+                                                                        key={
+                                                                            product
+                                                                                .producto
+                                                                                ._id +
+                                                                            index
+                                                                        }
+                                                                        style={{
+                                                                            marginTop:
+                                                                                "5px",
+                                                                            marginBottom:
+                                                                                "5px",
+                                                                        }}
+                                                                    >
+                                                                        Producto:{" "}
+                                                                        {
+                                                                            producto
+                                                                        }
+                                                                        . Marca:{" "}
+                                                                        {marca}.
+                                                                        Cantidad
+                                                                        vendida:{" "}
+                                                                        {
+                                                                            cantidad
+                                                                        }
+                                                                        . Precio
+                                                                        de
+                                                                        venta: $
+                                                                        {
+                                                                            precioVenta
+                                                                        }
+                                                                        .
+                                                                        Porcentaje
+                                                                        de
+                                                                        ganancia:{" "}
+                                                                        {
+                                                                            porcentajeGanancia
+                                                                        }
+                                                                        %.
+                                                                        {descripcionJson.length ===
+                                                                        index +
+                                                                            1 ? null : (
+                                                                            <hr
+                                                                                key={
+                                                                                    product
+                                                                                        .producto
+                                                                                        ._id +
+                                                                                    "index"
+                                                                                }
+                                                                            />
+                                                                        )}
+                                                                    </div>
+                                                                );
+                                                            }
+                                                        )}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        {opcional
+                                                            ? opcional
+                                                            : "-"}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        {total ? total : "-"}
+                                                    </Td>
+                                                </Tr>
+                                            );
+                                        } else {
+                                            return (
+                                                <Tr
+                                                    hoverable
+                                                    key={_id}
+                                                    tipo={returnBackgroundColor}
+                                                >
+                                                    <Td hoverable>
+                                                        {new Date(
+                                                            createdAt
+                                                        ).getDate()}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        {`${new Date(
+                                                            createdAt
+                                                        ).getHours()}:${
+                                                            (new Date(
+                                                                createdAt
+                                                            ).getMinutes() < 10
+                                                                ? "0"
+                                                                : "") +
+                                                            new Date(
+                                                                createdAt
+                                                            ).getMinutes()
+                                                        }`}
+                                                    </Td>
+                                                    <Td hoverable>{tipo}</Td>
+                                                    <Td hoverable>
+                                                        {responsable}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        {descripcion}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        {opcional
+                                                            ? opcional
+                                                            : "-"}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        {total ? total : "-"}
+                                                    </Td>
+                                                </Tr>
+                                            );
+                                        }
                                     })}
                                 </Tbody>
                             </Table>
@@ -361,14 +506,14 @@ const Th = styled.th`
     color: white;
     background-color: tomato;
     height: 3vh;
-    border: 1px solid #ddd;
+    border: 2px solid black;
     word-break: break-word;
     min-width: 100px;
     ${(props) => props.short && "width: 100px;"}
 `;
 const Td = styled.td`
     height: 3vh;
-    border: 1px solid #ddd;
+    border: 2px solid black;
     word-break: break-word;
     padding-left: 5px;
     text-align: center;
@@ -379,13 +524,13 @@ const Td = styled.td`
         ${(props) =>
             props.hoverable
                 ? `cursor: pointer;
-        background-color: gray;
         color: white;`
                 : "cursor: default;"}
     }
 `;
 const Tr = styled.tr`
     ${(props) => props.hoverable && "background-color: white;cursor: pointer;"}
+    ${(props) => props.tipo}
     &:hover {
         ${(props) => props.hoverable && "background-color: gray; color:white;"}
     }

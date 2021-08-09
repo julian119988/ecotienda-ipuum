@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 mongoose
-    .connect("mongodb://localhost:27017/test", {
+    .connect("mongodb://localhost:27017/test2", {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })

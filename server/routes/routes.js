@@ -17,6 +17,8 @@ import {
     deleteFraccionamiento,
     postVenta,
     getHistorial,
+    aperturaCaja,
+    cierreCaja,
 } from "../controllers/controllers";
 
 router.post("/todo", uploadTodo);
@@ -41,5 +43,8 @@ router.delete("/fraccionamiento", deleteFraccionamiento);
 router.post("/ventas", postVenta);
 
 router.get("/historial", getHistorial);
+
+router.post("/aperturaCaja", aperturaCaja);
+router.post("/cierreCaja", cierreCaja);
 
 export default router;

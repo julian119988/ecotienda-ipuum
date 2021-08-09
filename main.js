@@ -100,7 +100,6 @@ ipcMain.on("imprimir", (event, arg) => {
     let win = BrowserWindow.getFocusedWindow();
     win.webContents.print(options, (success, failureReason) => {
         if (!success) console.log(failureReason);
-
         console.log("Print Initiated");
     });
 });

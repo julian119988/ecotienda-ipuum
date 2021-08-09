@@ -3,6 +3,7 @@ import TodoModel from "../models/TodoModel";
 import VendedoresModel from "../models/VendedoresModel";
 import FraccionamientoModel from "../models/FraccionamientoModel";
 import HistorialModel from "../models/HistorialModel";
+import AperturaCajaModel from "../models/AperturaCajaModel";
 import bcrypt from "bcrypt";
 
 export const getTodos = async (req, res, next) => {
@@ -299,16 +300,16 @@ async function checkStock(productos) {
 
 const calcularInfoVenta = async (productos, isFeria, user) => {
     var total = 0;
-    var descripcion = "";
+    var descripcion = [];
     productos.map((producto) => {
-        descripcion += `Producto: ${producto.producto}. Marca: ${producto.marca}. Cantidad vendida: ${producto.cantidad}. Precio de venta: ${producto.precioVenta}. Porcentaje de ganancia: ${producto.porcentajeGanancia} <br/>`;
+        descripcion.push({ producto });
         total += producto.cantidad * producto.precioVenta;
     });
     console.log(productos, isFeria, user);
     const nuevoHistorial = new HistorialModel({
         tipo: "venta",
         responsable: user.nombre,
-        descripcion: descripcion,
+        descripcion: JSON.stringify(descripcion),
         opcional: isFeria,
         total: total,
     });
@@ -345,6 +346,56 @@ export const getHistorial = async (req, res, next) => {
             ],
         });
         res.send(historial);
+    } catch (err) {
+        res.status(418).send(err);
+        next(err);
+    }
+};
+export const aperturaCaja = async (req, res, next) => {
+    const {
+        data: { monto, user },
+    } = req.body;
+
+    try {
+        const nuevoRegistro = new AperturaCajaModel({
+            nombre: user.nombre,
+            abrio: "abrio",
+            dinero: parseInt(monto),
+        });
+        const isSaved = await nuevoRegistro.save();
+        const newHistory = new HistorialModel({
+            tipo: "caja",
+            responsable: user.nombre,
+            descripcion: `Apertura de caja con un monto de $${monto}.`,
+            total: parseInt(monto),
+        });
+        await newHistory.save();
+        res.send(isSaved);
+    } catch (err) {
+        res.status(418).send(err);
+        next(err);
+    }
+};
+export const cierreCaja = async (req, res, next) => {
+    const {
+        data: { monto, user },
+    } = req.body;
+
+    try {
+        const nuevoRegistro = new AperturaCajaModel({
+            nombre: user.nombre,
+            abrio: "cerro",
+            dinero: parseInt(monto),
+        });
+        const isSaved = await nuevoRegistro.save();
+        const newHistory = new HistorialModel({
+            tipo: "caja",
+            responsable: user.nombre,
+            descripcion: `Cierre de caja con un monto de $${monto}.`,
+            total: parseInt(monto),
+        });
+        await newHistory.save();
+        res.send(isSaved);
     } catch (err) {
         res.status(418).send(err);
         next(err);

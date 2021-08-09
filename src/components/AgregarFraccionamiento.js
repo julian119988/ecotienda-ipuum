@@ -50,7 +50,7 @@ export default function AgregarVendedor() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            console.log(await postFraccionamiento(fraccionamiento));
+            await postFraccionamiento(fraccionamiento);
             history.goBack();
         } catch (err) {
             await smalltalk.alert(

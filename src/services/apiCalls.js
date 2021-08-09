@@ -66,7 +66,6 @@ export const getVendedores = async () => {
 };
 export const checkPass = async (nombre, password) => {
     try {
-        console.log("entro en apicalls");
         const response = await api.post(`/vendedor/${nombre}`, {
             data: { nombre, password },
         });
@@ -162,13 +161,36 @@ export const postVenta = async (productos, isFeria, user) => {
     }
 };
 
-//
+//Historial
 export const getHistorial = async (query) => {
     try {
         const response = await api.get("/historial", { params: query });
         return response.data;
     } catch (err) {
         console.log(err);
+        return err;
+    }
+};
+//Apertura y cierre de caja
+export const postAperturaCaja = async (monto, user) => {
+    try {
+        const response = await api.post("/aperturaCaja", {
+            data: { monto, user },
+        });
+        return response.data;
+    } catch (err) {
+        console.log(err.response);
+        return err;
+    }
+};
+export const postCierreCaja = async (monto, user) => {
+    try {
+        const response = await api.post("/cierreCaja", {
+            data: { monto, user },
+        });
+        return response.data;
+    } catch (err) {
+        console.log(err.response);
         return err;
     }
 };

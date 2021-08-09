@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const aperturaCajaSchema = new Schema({
     nombre: String,
     abrio: String,
-    fecha: Date,
+    fecha: { type: Date, default: Date.now },
     dinero: Number,
 });
 

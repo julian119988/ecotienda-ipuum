@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { getProductos, postVenta } from "../services/apiCalls";
+import {
+    getProductos,
+    postVenta,
+    postAperturaCaja,
+    postCierreCaja,
+} from "../services/apiCalls";
 import Loader from "react-loader-spinner";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import smalltalk from "smalltalk";
@@ -14,6 +19,11 @@ export default function Vender(props) {
     const [isLoading, setIsLoading] = useState(false);
     const [carrito, setCarrito] = useState([]);
     const [total, setTotal] = useState(0);
+    const [caja, setCaja] = useState(null);
+
+    useEffect(() => {
+        setCaja(parseInt(localStorage.getItem("caja")));
+    }, []);
 
     useEffect(() => {
         if (busqueda) {
@@ -298,190 +308,297 @@ export default function Vender(props) {
         childWindow.document.body.appendChild(table);
         childWindow.document.body.appendChild(printButton);
     };
+
+    const abrirCaja = async (e) => {
+        e.preventDefault();
+        if (e.target[0].value) {
+            localStorage.setItem("caja", `${e.target[0].value}`);
+            setCaja(e.target[0].value);
+            await postAperturaCaja(parseInt(e.target[0].value), props.user);
+        }
+    };
+    const cerrarCaja = async () => {
+        let seguir = true;
+        try {
+            while (seguir) {
+                const response = await smalltalk.prompt(
+                    "Cerrar caja",
+                    "Ingrese el monto con el cual cierra caja:"
+                );
+                if (parseInt(response)) {
+                    seguir = false;
+                    localStorage.removeItem("caja");
+                    setCaja(null);
+                    await postCierreCaja(parseInt(response), props.user);
+                }
+            }
+        } catch (err) {
+            console.log("Cuadro de dialogo cerrado!");
+        }
+    };
     return (
         <Container>
-            <Productos>
-                <InputSearch
-                    type="text"
-                    onChange={handleChange}
-                    placeholder="Buscar un producto..."
-                    autoFocus
-                />
-
-                {isLoading ? (
-                    <Center>
-                        <Loader
-                            type="ThreeDots"
-                            color="tomato"
-                            height={100}
-                            width={100}
+            {caja ? (
+                <>
+                    {" "}
+                    <CerrarCajaButton onClick={cerrarCaja}>
+                        Cerrar Caja
+                    </CerrarCajaButton>
+                    <Productos>
+                        <InputSearch
+                            type="text"
+                            onChange={handleChange}
+                            placeholder="Buscar un producto..."
+                            autoFocus
                         />
-                    </Center>
-                ) : productos[0] === undefined ? (
-                    busqueda ? (
-                        <Center>
-                            No se encontraron resultados, escribe "all" para
-                            mostrar todos los productos.
-                        </Center>
-                    ) : (
-                        <Center>
-                            Empieza una busqueda o escribe "all" para mostrar
-                            todos los productos.
-                        </Center>
-                    )
-                ) : (
-                    <Table>
-                        <Thead>
-                            <Tr>
-                                <Th colSpan="5">Productos</Th>
-                            </Tr>
-                            <Tr>
-                                <Th>Producto</Th>
-                                <Th>Marca</Th>
-                                <Th>Stock</Th>
-                                <Th>Precio venta</Th>
-                                <Th short>Agregar</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {productos.map((product) => {
-                                const {
-                                    _id,
-                                    producto,
-                                    cantidad,
-                                    marca,
-                                    precioVenta,
-                                } = product;
-                                return (
-                                    <Tr
-                                        hoverable
-                                        key={_id}
-                                        onClick={() => handleClick(product)}
-                                    >
-                                        <Td hoverable>{producto}</Td>
-                                        <Td hoverable>{marca}</Td>
-                                        <Td hoverable>{cantidad}</Td>
-                                        <Td hoverable>{precioVenta}</Td>
-                                        <Td hoverable short>
-                                            <Button add>
-                                                <AddCircleOutlineIcon />
-                                            </Button>
-                                        </Td>
-                                    </Tr>
-                                );
-                            })}
-                        </Tbody>
-                    </Table>
-                )}
-            </Productos>
-            <Carrito>
-                {carrito[0] === undefined ? (
-                    "Carrito vacio"
-                ) : (
-                    <>
-                        <Table>
-                            <Thead>
-                                <Tr>
-                                    <Th colSpan="6">Carrito</Th>
-                                </Tr>
-                                <Tr>
-                                    <Th>Producto</Th>
-                                    <Th>Marca</Th>
-                                    <Th>Cantidad</Th>
-                                    <Th>Precio unitario</Th>
-                                    <Th>Precio parcial</Th>
-                                    <Th short>Eliminar</Th>
-                                </Tr>
-                            </Thead>
-                            <Tbody>
-                                {carrito.map((product, index) => {
-                                    const {
-                                        _id,
-                                        producto,
-                                        cantidad,
-                                        marca,
-                                        precioVenta,
-                                        precioCompra,
-                                        porcentajeGanancia,
-                                    } = product;
-                                    return (
-                                        <Tr key={_id}>
-                                            <Td>{producto}</Td>
-                                            <Td>{marca}</Td>
-                                            <Td
-                                                hoverable
-                                                onClick={() =>
-                                                    editCantidadFromCarrito(_id)
-                                                }
-                                            >
-                                                {cantidad}
-                                            </Td>
-                                            <Td
-                                                hoverable
-                                                onClick={() =>
-                                                    editPrecioFromCarrito(
-                                                        _id,
-                                                        precioCompra,
-                                                        porcentajeGanancia
-                                                    )
-                                                }
-                                            >
-                                                {precioVenta}
-                                            </Td>
-                                            <Td
-                                                hoverable
-                                                onClick={() =>
-                                                    editPrecioFromCarrito(
-                                                        _id,
-                                                        precioCompra,
-                                                        porcentajeGanancia
-                                                    )
-                                                }
-                                            >
-                                                {parseInt(cantidad) *
-                                                    parseInt(precioVenta)}
-                                            </Td>
 
-                                            <Td
-                                                short
+                        {isLoading ? (
+                            <Center>
+                                <Loader
+                                    type="ThreeDots"
+                                    color="tomato"
+                                    height={100}
+                                    width={100}
+                                />
+                            </Center>
+                        ) : productos[0] === undefined ? (
+                            busqueda ? (
+                                <Center>
+                                    No se encontraron resultados, escribe "all"
+                                    para mostrar todos los productos.
+                                </Center>
+                            ) : (
+                                <Center>
+                                    Empieza una busqueda o escribe "all" para
+                                    mostrar todos los productos.
+                                </Center>
+                            )
+                        ) : (
+                            <Table>
+                                <Thead>
+                                    <Tr>
+                                        <Th colSpan="5">Productos</Th>
+                                    </Tr>
+                                    <Tr>
+                                        <Th>Producto</Th>
+                                        <Th>Marca</Th>
+                                        <Th>Stock</Th>
+                                        <Th>Precio venta</Th>
+                                        <Th short>Agregar</Th>
+                                    </Tr>
+                                </Thead>
+                                <Tbody>
+                                    {productos.map((product) => {
+                                        const {
+                                            _id,
+                                            producto,
+                                            cantidad,
+                                            marca,
+                                            precioVenta,
+                                        } = product;
+                                        return (
+                                            <Tr
+                                                hoverable
+                                                key={_id}
                                                 onClick={() =>
-                                                    deleteFromCarrito(_id)
+                                                    handleClick(product)
                                                 }
                                             >
-                                                <Button delete>
-                                                    <DeleteIcon />
-                                                </Button>
+                                                <Td hoverable>{producto}</Td>
+                                                <Td hoverable>{marca}</Td>
+                                                <Td hoverable>{cantidad}</Td>
+                                                <Td hoverable>{precioVenta}</Td>
+                                                <Td hoverable short>
+                                                    <Button add>
+                                                        <AddCircleOutlineIcon />
+                                                    </Button>
+                                                </Td>
+                                            </Tr>
+                                        );
+                                    })}
+                                </Tbody>
+                            </Table>
+                        )}
+                    </Productos>
+                    <Carrito>
+                        {carrito[0] === undefined ? (
+                            "Carrito vacio"
+                        ) : (
+                            <>
+                                <Table>
+                                    <Thead>
+                                        <Tr>
+                                            <Th colSpan="6">Carrito</Th>
+                                        </Tr>
+                                        <Tr>
+                                            <Th>Producto</Th>
+                                            <Th>Marca</Th>
+                                            <Th>Cantidad</Th>
+                                            <Th>Precio unitario</Th>
+                                            <Th>Precio parcial</Th>
+                                            <Th short>Eliminar</Th>
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {carrito.map((product, index) => {
+                                            const {
+                                                _id,
+                                                producto,
+                                                cantidad,
+                                                marca,
+                                                precioVenta,
+                                                precioCompra,
+                                                porcentajeGanancia,
+                                            } = product;
+                                            return (
+                                                <Tr key={_id}>
+                                                    <Td>{producto}</Td>
+                                                    <Td>{marca}</Td>
+                                                    <Td
+                                                        hoverable
+                                                        onClick={() =>
+                                                            editCantidadFromCarrito(
+                                                                _id
+                                                            )
+                                                        }
+                                                    >
+                                                        {cantidad}
+                                                    </Td>
+                                                    <Td
+                                                        hoverable
+                                                        onClick={() =>
+                                                            editPrecioFromCarrito(
+                                                                _id,
+                                                                precioCompra,
+                                                                porcentajeGanancia
+                                                            )
+                                                        }
+                                                    >
+                                                        {precioVenta}
+                                                    </Td>
+                                                    <Td
+                                                        hoverable
+                                                        onClick={() =>
+                                                            editPrecioFromCarrito(
+                                                                _id,
+                                                                precioCompra,
+                                                                porcentajeGanancia
+                                                            )
+                                                        }
+                                                    >
+                                                        {parseInt(cantidad) *
+                                                            parseInt(
+                                                                precioVenta
+                                                            )}
+                                                    </Td>
+
+                                                    <Td
+                                                        short
+                                                        onClick={() =>
+                                                            deleteFromCarrito(
+                                                                _id
+                                                            )
+                                                        }
+                                                    >
+                                                        <Button delete>
+                                                            <DeleteIcon />
+                                                        </Button>
+                                                    </Td>
+                                                </Tr>
+                                            );
+                                        })}
+                                    </Tbody>
+                                    <Tfoot>
+                                        <Tr>
+                                            <Td colSpan="4">Total</Td>
+                                            <Td colSpan="2">{total}</Td>
+                                        </Tr>
+                                        <Tr>
+                                            <Td
+                                                colSpan="6"
+                                                style={{
+                                                    margin: "0",
+                                                    padding: "0",
+                                                }}
+                                            >
+                                                <RealizarCompra
+                                                    onClick={() =>
+                                                        handleVenta()
+                                                    }
+                                                >
+                                                    RealizarCompra{" "}
+                                                    <ShoppingCartIcon />
+                                                </RealizarCompra>
                                             </Td>
                                         </Tr>
-                                    );
-                                })}
-                            </Tbody>
-                            <Tfoot>
-                                <Tr>
-                                    <Td colSpan="4">Total</Td>
-                                    <Td colSpan="2">{total}</Td>
-                                </Tr>
-                                <Tr>
-                                    <Td
-                                        colSpan="6"
-                                        style={{ margin: "0", padding: "0" }}
-                                    >
-                                        <RealizarCompra
-                                            onClick={() => handleVenta()}
-                                        >
-                                            RealizarCompra <ShoppingCartIcon />
-                                        </RealizarCompra>
-                                    </Td>
-                                </Tr>
-                            </Tfoot>
-                        </Table>
-                    </>
-                )}
-            </Carrito>
+                                    </Tfoot>
+                                </Table>
+                            </>
+                        )}
+                    </Carrito>
+                </>
+            ) : (
+                <AbrirCaja>
+                    <AbrirCajaTitle>Abrir caja (ingresar monto)</AbrirCajaTitle>
+                    <AbrirCajaForm onSubmit={abrirCaja}>
+                        <AbrirCajaInput type="number" required />
+                        <AbrirCajaInput type="submit" value="Abrir" button />
+                    </AbrirCajaForm>
+                </AbrirCaja>
+            )}
         </Container>
     );
 }
-
+const CerrarCajaButton = styled.button`
+    position: absolute;
+    bottom: 10vh;
+    right: 10vh;
+    width: 20vh;
+    height: 20vh;
+    border-radius: 50%;
+    color: white;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background-color: orange;
+    font-size: 25px;
+    font-weight: 900;
+`;
+const AbrirCaja = styled.div`
+    width: 30vh;
+    height: 20vh;
+    background-color: tomato;
+    margin: auto auto auto auto;
+    border-radius: 5vh;
+    padding: 3vh;
+    color: white;
+`;
+const AbrirCajaTitle = styled.h3`
+    padding: 0;
+    margin: 0;
+    margin-top: 2vh;
+    text-align: center;
+`;
+const AbrirCajaForm = styled.form`
+    display: flex;
+    flex-direction: column;
+    margin-top: 4vh;
+`;
+const AbrirCajaInput = styled.input`
+    width: 80%;
+    margin: 0 auto 0 auto;
+    ${(props) =>
+        props.button &&
+        `
+        height: 3vh;
+        width: 7vh;
+        margin: 2vh 2.5vh 0 auto;
+        background-color: orange;
+        color: white;
+        border: 1px solid white;
+        outline: none;
+    `};
+`;
 const RealizarCompra = styled.button`
     width: 100%;
     height: 100%;
@@ -535,6 +652,7 @@ const InputSearch = styled.input`
 const Container = styled.div`
     width: 100%;
     height: 80vh;
+    position: relative;
     display: flex;
     flex-direction: column;
 `;
