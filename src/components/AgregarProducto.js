@@ -6,6 +6,9 @@ import smalltalk from "smalltalk";
 
 export default function AgregarVendedor() {
     const [producto, setProducto] = useState();
+    const [isConcesion, setIsConcesion] = useState(false);
+    const [firstRender, setFirstRender] = useState(false);
+    const [opacity, setOpacity] = useState("opacity: 0;");
     const productoRef = useRef();
     const cantidadRef = useRef();
     const marcaRef = useRef();
@@ -16,6 +19,7 @@ export default function AgregarVendedor() {
     let history = useHistory();
 
     useEffect(() => {
+        setFirstRender(true);
         if (location.state.default) {
             setProducto(() => location.state.producto);
             productoRef.current.defaultValue = location.state.producto.producto;
@@ -37,6 +41,7 @@ export default function AgregarVendedor() {
                 precioCompra: "",
                 porcentajeGanancia: "",
                 _id: "",
+                concesion: false,
             });
             productoRef.current.focus();
         } // eslint-disable-next-line
@@ -44,29 +49,84 @@ export default function AgregarVendedor() {
     function toFixedIfNecessary(value, dp) {
         return +parseFloat(value).toFixed(dp);
     }
+    useEffect(() => {
+        if (firstRender) {
+            handleChange();
+        }
+        setTimeout(
+            () => setOpacity("opacity: 1; transition: all 0.3s ease-out;"),
+            600
+        );
+    }, [isConcesion]);
 
-    const handleChange = () => {
-        const precioVenta =
-            (porcentajeGananciaRef.current.value *
-                precioCompraRef.current.value) /
-                100 +
-            parseInt(precioCompraRef.current.value);
+    const handleChange = (event) => {
+        if (!event) {
+            setProducto({
+                _id: producto._id,
+                producto: productoRef.current.value,
+                cantidad: cantidadRef.current.value,
+                marca: marcaRef.current.value,
+                precioCompra: precioCompraRef.current.value,
+                precioVenta: precioVentaRef.current.value,
+                porcentajeGanancia: porcentajeGananciaRef.current.value,
+                concesion: isConcesion,
+            });
+        } else {
+            if (
+                event.target.name === "compra" ||
+                event.target.name === "ganancia"
+            ) {
+                const precioVenta =
+                    (porcentajeGananciaRef.current.value *
+                        precioCompraRef.current.value) /
+                        100 +
+                    parseInt(precioCompraRef.current.value);
 
-        setProducto({
-            _id: producto._id,
-            producto: productoRef.current.value,
-            cantidad: cantidadRef.current.value,
-            marca: marcaRef.current.value,
-            precioCompra: precioCompraRef.current.value,
-            precioVenta: toFixedIfNecessary(precioVenta, 2),
-            porcentajeGanancia: porcentajeGananciaRef.current.value,
-        });
-        precioVentaRef.current.value = toFixedIfNecessary(precioVenta, 2);
+                setProducto({
+                    _id: producto._id,
+                    producto: productoRef.current.value,
+                    cantidad: cantidadRef.current.value,
+                    marca: marcaRef.current.value,
+                    precioCompra: precioCompraRef.current.value,
+                    precioVenta: toFixedIfNecessary(precioVenta, 2),
+                    porcentajeGanancia: porcentajeGananciaRef.current.value,
+                    concesion: isConcesion,
+                });
+                precioVentaRef.current.value = toFixedIfNecessary(
+                    precioVenta,
+                    2
+                );
+            } else {
+                const porcentajeGanancia =
+                    ((precioVentaRef.current.value -
+                        precioCompraRef.current.value) *
+                        100) /
+                    precioCompraRef.current.value;
+                setProducto({
+                    _id: producto._id,
+                    producto: productoRef.current.value,
+                    cantidad: cantidadRef.current.value,
+                    marca: marcaRef.current.value,
+                    precioCompra: precioCompraRef.current.value,
+                    precioVenta: precioVentaRef.current.value,
+                    porcentajeGanancia: toFixedIfNecessary(
+                        porcentajeGanancia,
+                        2
+                    ),
+                    concesion: isConcesion,
+                });
+                porcentajeGananciaRef.current.value = toFixedIfNecessary(
+                    porcentajeGanancia,
+                    2
+                );
+            }
+        }
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await location.state.funcion(producto);
+            await location.state.funcion(producto); // Falta agregar concesion a la llamada y el sv
             history.goBack();
         } catch (err) {
             console.log(err);
@@ -126,6 +186,7 @@ export default function AgregarVendedor() {
                 <Input
                     type="number"
                     placeholder="Precio de compra"
+                    name="compra"
                     onChange={handleChange}
                     ref={precioCompraRef}
                     onFocus={handleFocus}
@@ -137,8 +198,7 @@ export default function AgregarVendedor() {
                     placeholder="Precio de venta"
                     onChange={handleChange}
                     ref={precioVentaRef}
-                    k
-                    disabled={true}
+                    name="venta"
                     required
                 />
                 <Label>
@@ -151,8 +211,23 @@ export default function AgregarVendedor() {
                     onChange={handleChange}
                     ref={porcentajeGananciaRef}
                     onFocus={handleFocus}
+                    name="ganancia"
                     required
                 />
+                <Label>Producto de conceción</Label>
+
+                <SwitchDiv
+                    id="switchDiv"
+                    onClick={() => {
+                        setOpacity("opacity: 0;");
+                        setIsConcesion(!isConcesion);
+                    }}
+                >
+                    <SwitchText id="switchText" opacity={opacity}>
+                        {isConcesion ? "De consecion" : "Normal"}
+                    </SwitchText>
+                    <SwitchThumb position={isConcesion}></SwitchThumb>
+                </SwitchDiv>
                 <Input
                     type="submit"
                     value={location.state.from}
@@ -171,7 +246,46 @@ const Label = styled.label`
     width: 80%;
     max-width: 500px;
 `;
+const SwitchDiv = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 80%;
+    height: 5vh;
+    border-radius: 5vh;
+    max-width: 500px;
+    background-color: tomato;
+    cursor: pointer;
+    margin: 1vh;
+`;
 
+const SwitchThumb = styled.div`
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+    width: 4vh;
+    height: 4vh;
+    top: 0.5vh;
+    transition: all 0.6s ease-in-out;
+    ${(props) => {
+        const switchWidth = document.getElementById("switchDiv");
+        return !props.position
+            ? `transform: translateX(calc(-${
+                  switchWidth && switchWidth.clientWidth
+              }px / 2 + 2.5vh));`
+            : `transform: translateX(calc(${
+                  switchWidth && switchWidth.clientWidth
+              }px / 2 - 2.5vh));`;
+    }}
+`;
+const SwitchText = styled.p`
+    color: white;
+    font-size: 20px;
+    top: 1.5vh;
+    margin: 0;
+    ${(props) => props.opacity}
+`;
 const Container = styled.div`
     display: flex;
     width: 100%;

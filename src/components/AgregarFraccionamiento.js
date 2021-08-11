@@ -5,8 +5,7 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useHistory } from "react-router-dom";
 import smalltalk from "smalltalk";
 
-export default function AgregarVendedor() {
-    const [vendedores, setVendedores] = useState([]);
+export default function AgregarFraccionamiento(props) {
     const [fraccionamiento, setFraccionamiento] = useState({
         nombre: "",
         descripcion: "",
@@ -14,37 +13,17 @@ export default function AgregarVendedor() {
         gananci: 0,
         fechaRef: Date.now(),
     });
-
-    const nombreRef = useRef();
     const descripcionRef = useRef();
     const gananciaRef = useRef();
     const cantidadRef = useRef();
-    const fechaRef = useRef();
-
     let history = useHistory();
 
-    useEffect(() => {
-        fechaRef.current.value = new Date().toDateInputValue();
-        fetchVendedores();
-    }, []);
-    // eslint-disable-next-line
-    Date.prototype.toDateInputValue = function () {
-        var local = new Date(this);
-        local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
-        return local.toJSON().slice(0, 10);
-    };
-
-    const fetchVendedores = async () => {
-        const response = await getVendedores();
-        setVendedores(response);
-    };
     const handleChange = () => {
         setFraccionamiento({
-            nombre: nombreRef.current.value,
+            nombre: props.user.nombre,
             descripcion: descripcionRef.current.value,
             ganancia: gananciaRef.current.value,
             cantidad: cantidadRef.current.value,
-            fecha: fechaRef.current.value,
         });
     };
     const handleSubmit = async (e) => {
@@ -74,21 +53,6 @@ export default function AgregarVendedor() {
                 />
             </GoBackBar>
             <Form onSubmit={handleSubmit}>
-                <Select
-                    type="text"
-                    placeholder="Nombre"
-                    onChange={handleChange}
-                    ref={nombreRef}
-                    required
-                >
-                    {vendedores.map((vendedor) => {
-                        return (
-                            <option key={vendedor._id}>
-                                {vendedor.nombre}
-                            </option>
-                        );
-                    })}
-                </Select>
                 <Input
                     type="text"
                     placeholder="Descripcion"
@@ -108,13 +72,6 @@ export default function AgregarVendedor() {
                     placeholder="Cantidad"
                     onChange={handleChange}
                     ref={cantidadRef}
-                    required
-                />
-                <Input
-                    type="date"
-                    placeholder="Fecha"
-                    onChange={handleChange}
-                    ref={fechaRef}
                     required
                 />
                 <Input

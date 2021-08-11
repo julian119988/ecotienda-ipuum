@@ -76,6 +76,7 @@ function createWindow() {
 
     // Open the DevTools.
     if (isDev) mainWindow.webContents.openDevTools();
+    mainWindow.maximize();
 
     mainWindow.on("close", function (e) {
         var choice = dialog.showMessageBox(this, {

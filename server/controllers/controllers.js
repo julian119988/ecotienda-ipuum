@@ -217,23 +217,25 @@ export const getFraccionamiento = async (req, res, next) => {
     }
 };
 export const postFraccionamiento = async (req, res, next) => {
-    const { nombre, descripcion, ganancia, cantidad, fecha } = await req.body;
+    const { nombre, descripcion, ganancia, cantidad } = await req.body;
     try {
+        const newHistory = new HistorialModel({
+            tipo: "fraccionamiento",
+            responsable: nombre,
+            descripcion: `Fraccionamiento agregado: Producto: ${descripcion}. Cantidad: ${cantidad}.`,
+            total: parseInt(ganancia) * parseInt(cantidad),
+        });
+        const historyIsSaved = await newHistory.save();
+
         const nuevoFraccionamiento = new FraccionamientoModel({
             nombre,
             descripcion,
             ganancia: parseInt(ganancia) * parseInt(cantidad),
             cantidad,
-            fecha,
+            idHistorial: historyIsSaved._id,
         });
         const isSaved = await nuevoFraccionamiento.save();
-        const newHistory = new HistorialModel({
-            tipo: "fraccionamiento",
-            responsable: nombre,
-            descripcion: `Producto: ${descripcion}. Cantidad: ${cantidad}. Dia del fraccionamiento: ${fecha}`,
-            total: parseInt(ganancia) * parseInt(cantidad),
-        });
-        const historyIsSaved = await newHistory.save();
+        console.log(isSaved);
         res.send({ isSaved, historyIsSaved });
     } catch (err) {
         res.status(413).send(
@@ -243,12 +245,15 @@ export const postFraccionamiento = async (req, res, next) => {
     }
 };
 export const deleteFraccionamiento = async (req, res, next) => {
-    const { id } = await req.body;
+    const { id, idHistorial } = await req.body;
     try {
+        const isDeletedFromHistory = await HistorialModel.findOneAndDelete({
+            _id: idHistorial,
+        });
         const isDeleted = await FraccionamientoModel.findOneAndDelete({
             _id: id,
         });
-        res.send(isDeleted);
+        res.send("Fraccionamiento eliminado!");
     } catch (err) {
         res.status(413).send(err);
         next(err);

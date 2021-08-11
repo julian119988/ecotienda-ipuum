@@ -7,6 +7,7 @@ const fraccionamientoSchema = new Schema({
     ganancia: Number,
     fecha: { type: Date, default: Date.now },
     cantidad: Number,
+    idHistorial: String,
 });
 
 const FraccionamientoModel = mongoose.model(

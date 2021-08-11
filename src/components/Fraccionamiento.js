@@ -9,7 +9,7 @@ import {
 import smalltalk from "smalltalk";
 import Loader from "react-loader-spinner";
 
-export default function AdministarVendedores() {
+export default function AdministarVendedores(props) {
     const [fraccionamientos, setFraccionamientos] = useState([]);
     const history = useHistory();
 
@@ -22,9 +22,9 @@ export default function AdministarVendedores() {
         setFraccionamientos(response.reverse());
     };
 
-    const handleClick = async (id) => {
+    const handleClick = async (id, idHistorial) => {
         try {
-            await deleteFraccionamiento(id);
+            await deleteFraccionamiento(id, idHistorial);
             await fetchFraccionamientos();
         } catch (err) {
             await smalltalk.alert(
@@ -70,6 +70,7 @@ export default function AdministarVendedores() {
                             const dia = fraccionamiento.fecha.slice(8, 10);
                             const mes = fraccionamiento.fecha.slice(5, 7);
                             const year = fraccionamiento.fecha.slice(0, 4);
+
                             return (
                                 <Tr key={fraccionamiento._id}>
                                     <Td>{fraccionamiento.nombre}</Td>
@@ -77,13 +78,23 @@ export default function AdministarVendedores() {
                                     <Td>{fraccionamiento.cantidad}</Td>
                                     <Td>{fraccionamiento.ganancia}</Td>
                                     <Td>{`${dia}/${mes}/${year}`}</Td>
-                                    <Td
-                                        delete
-                                        onClick={() =>
-                                            handleClick(fraccionamiento._id)
-                                        }
-                                    >
-                                        <DeleteButton>
+                                    <Td delete>
+                                        <DeleteButton
+                                            disabled={
+                                                fraccionamiento.nombre !==
+                                                props.user.nombre
+                                            }
+                                            isDisabled={
+                                                fraccionamiento.nombre !==
+                                                props.user.nombre
+                                            }
+                                            onClick={() =>
+                                                handleClick(
+                                                    fraccionamiento._id,
+                                                    fraccionamiento.idHistorial
+                                                )
+                                            }
+                                        >
                                             <DeleteIcon
                                                 style={{ fill: "white" }}
                                             />
@@ -158,16 +169,21 @@ const Container = styled.div`
 const DeleteButton = styled.button`
     width: 100%;
     height: 100%;
-    background-color: tomato;
     cursor: pointer;
     margin: 0;
     padding: 0;
     border: none;
     outline: none;
-    &:hover {
-        background-color: orange;
-    }
-    &:focus {
-        background-color: orange;
-    }
+    ${(props) =>
+        props.isDisabled
+            ? "background-color: gray; cursor: default;"
+            : `
+        background-color: tomato;
+        &:hover {
+            background-color: orange;
+        }
+        &:focus {
+            background-color: orange;
+        }
+    `}
 `;

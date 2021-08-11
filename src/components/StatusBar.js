@@ -63,11 +63,13 @@ const CambiarFeriaLocal = styled.button`
     color: white;
     cursor: pointer;
     border-radius: 5vh 5vh 0 0;
+    border-top: 1px solid white;
+    border-left: 1px solid white;
+    border-right: 1px solid white;
     ${(props) =>
         props.isFeria === "Local"
-            ? "background-color: tomato;"
+            ? "background-color: lightblue;"
             : `background-color: orange;
-                border: 1px solid white;
 `}
     &:hover {
         background-color: wheat;

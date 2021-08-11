@@ -52,7 +52,7 @@ export default function Home() {
                                 <TodoPill>
                                     <Title>{todo.titulo}</Title>
                                     <Description>
-                                        {`${todo.descripcion}    ${dia}/${mes}/${year}  ${hora}`}
+                                        {`${todo.descripcion}    ${dia}/${mes}/${year}  ${hora} ${todo.persona}`}
                                     </Description>
                                 </TodoPill>
                                 <DeleteTodoButton

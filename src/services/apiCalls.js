@@ -132,13 +132,13 @@ export const postFraccionamiento = async (fraccionamiento) => {
         return false;
     }
 };
-export const deleteFraccionamiento = async (id) => {
+export const deleteFraccionamiento = async (id, idHistorial) => {
     try {
         await smalltalk.confirm(
             "Confirmar",
             "Seguro quiere eliminar este fraccionamiento?"
         );
-        await api.delete("/fraccionamiento", { data: { id: id } });
+        await api.delete("/fraccionamiento", { data: { id, idHistorial } });
         return true;
     } catch (err) {
         return err.message;

@@ -129,10 +129,9 @@ export default function App() {
                             <Route path="/administrar-vendedores">
                                 <AdministrarVendedores user={user} />
                             </Route>
-                            <Route
-                                path="/fraccionamiento"
-                                component={Fraccionamiento}
-                            />
+                            <Route path="/fraccionamiento">
+                                <Fraccionamiento user={user} />
+                            </Route>
                             <Route
                                 path="/agregar-todo"
                                 component={AgregarTodo}
@@ -145,10 +144,9 @@ export default function App() {
                                 path="/agregar-producto"
                                 component={AgregarProducto}
                             />
-                            <Route
-                                path="/agregar-fraccionamiento"
-                                component={AgregarFraccionamiento}
-                            />
+                            <Route path="/agregar-fraccionamiento">
+                                <AgregarFraccionamiento user={user} />
+                            </Route>
                             <Redirect to="/" />
                         </>
                     ) : (
@@ -165,19 +163,17 @@ export default function App() {
                                 <Vender isFeria={isFeria} user={user} />
                             </Route>
 
-                            <Route
-                                path="/fraccionamiento"
-                                component={Fraccionamiento}
-                            />
+                            <Route path="/fraccionamiento">
+                                <Fraccionamiento user={user} />
+                            </Route>
                             <Route
                                 path="/agregar-todo"
                                 component={AgregarTodo}
                             />
 
-                            <Route
-                                path="/agregar-fraccionamiento"
-                                component={AgregarFraccionamiento}
-                            />
+                            <Route path="/agregar-fraccionamiento">
+                                <AgregarFraccionamiento user={user} />
+                            </Route>
                             <Redirect to="/" />
                         </>
                     )}
