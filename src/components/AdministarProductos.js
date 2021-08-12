@@ -173,6 +173,7 @@ export default function AdministarProductos(props) {
                         state: {
                             funcion: uploadProducto,
                             from: "Agregar producto",
+                            producto: props.user,
                             default: false,
                         },
                     })
@@ -218,7 +219,7 @@ export default function AdministarProductos(props) {
                     <Table>
                         <Thead>
                             <Tr>
-                                <Th colSpan="9">Productos</Th>
+                                <Th colSpan="10">Productos</Th>
                             </Tr>
                             <Tr>
                                 <Th style={{ width: "70px" }}>_id</Th>
@@ -228,6 +229,7 @@ export default function AdministarProductos(props) {
                                 <Th>Precio compra</Th>
                                 <Th>Precio venta</Th>
                                 <Th>Porcentaje de ganancia</Th>
+                                <Th>Concesion</Th>
                                 <Th short>Editar</Th>
                                 <Th short>Eliminar</Th>
                             </Tr>
@@ -242,6 +244,7 @@ export default function AdministarProductos(props) {
                                     precioCompra,
                                     precioVenta,
                                     porcentajeGanancia,
+                                    concesion,
                                 } = product;
                                 return (
                                     <Tr key={_id}>
@@ -315,6 +318,20 @@ export default function AdministarProductos(props) {
                                         >
                                             {porcentajeGanancia}
                                         </Td>
+                                        <Td
+                                            style={{ width: "180px" }}
+                                            onClick={() =>
+                                                editarCampo(
+                                                    "Concesion",
+                                                    product,
+                                                    concesion,
+                                                    "concesion"
+                                                )
+                                            }
+                                            hoverable
+                                        >
+                                            {concesion ? "Concesion" : "Normal"}
+                                        </Td>
                                         <Td short>
                                             <Button
                                                 onClick={() =>
@@ -326,7 +343,12 @@ export default function AdministarProductos(props) {
                                                                 updateProducto,
                                                             from: "Editar producto",
                                                             default: true,
-                                                            producto: product,
+                                                            producto: {
+                                                                _id: _id,
+                                                                producto:
+                                                                    product,
+                                                                user: props.user,
+                                                            },
                                                         },
                                                     })
                                                 }

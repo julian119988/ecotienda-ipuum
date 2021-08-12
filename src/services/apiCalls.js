@@ -84,20 +84,22 @@ export const getProductos = async (busqueda) => {
         return error;
     }
 };
-export const uploadProducto = async (producto) => {
+export const uploadProducto = async (producto, user) => {
     try {
-        const response = await api.post("/productos", producto);
+        const response = await api.post("/productos", { producto, user });
         return response.data;
     } catch (err) {
         return err;
     }
 };
 export const updateProducto = async (producto, productoAntiguo) => {
+    console.log(productoAntiguo, producto);
     try {
         const response = await api.patch(`/productos/${producto._id}`, {
             producto,
             productoAntiguo,
         });
+
         return response;
     } catch (err) {
         return err;

@@ -8,6 +8,7 @@ const prouctosSchema = new Schema({
     marca: String,
     precioCompra: Number,
     porcentajeGanancia: Number,
+    concesion: Boolean,
 });
 
 const ProductosModel = mongoose.model("Productos", prouctosSchema);

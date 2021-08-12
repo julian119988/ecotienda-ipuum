@@ -127,6 +127,7 @@ export const uploadProducto = async (req, res, next) => {
         marca,
         precioCompra,
         porcentajeGanancia,
+        concesion,
     } = await req.body;
     try {
         const nuevoProducto = new ProductosModel({
@@ -136,14 +137,7 @@ export const uploadProducto = async (req, res, next) => {
             marca: marca.toString(),
             precioCompra: parseInt(precioCompra),
             porcentajeGanancia: parseInt(porcentajeGanancia),
-        });
-        console.log({
-            producto: producto.toString(),
-            precioVenta: parseInt(precioVenta),
-            cantidad: parseInt(cantidad),
-            marca: marca.toString(),
-            precioCompra: parseInt(precioCompra),
-            porcentajeGanancia: parseInt(porcentajeGanancia),
+            concesion,
         });
         const isSaved = await nuevoProducto.save();
         res.send(isSaved);
@@ -187,19 +181,32 @@ export const deleteProducto = async (req, res, next) => {
 export const updateProducto = async (req, res, next) => {
     const { id } = await req.params;
     const { producto, productoAntiguo } = await req.body;
+    console.log(producto, productoAntiguo);
     try {
         const isUpdated = await ProductosModel.findByIdAndUpdate(id, producto);
-        const newHistory = new HistorialModel({
-            tipo: "producto",
-            responsable: productoAntiguo.user.nombre,
-            descripcion: `Producto: ${productoAntiguo.producto}. ${
-                productoAntiguo.campo
-            } cambio de: ${productoAntiguo[productoAntiguo.campo]}. A: ${
-                producto[productoAntiguo.campo]
-            }`,
-        });
-        const historyIsSaved = await newHistory.save();
-        res.send({ isUpdated, historyIsSaved });
+        if (productoAntiguo.campo) {
+            const newHistory = new HistorialModel({
+                tipo: "producto",
+                responsable: productoAntiguo.user.nombre,
+                descripcion: `Producto: ${productoAntiguo.producto}. ${
+                    productoAntiguo.campo
+                } cambio de: ${productoAntiguo[productoAntiguo.campo]}. A: ${
+                    producto[productoAntiguo.campo]
+                }`,
+            });
+            const historyIsSaved = await newHistory.save();
+            res.send({ isUpdated, historyIsSaved });
+        } else {
+            const newHistory = new HistorialModel({
+                tipo: "producto",
+                responsable: productoAntiguo.user.nombre,
+                descripcion: `El producto se ha actualizado de ${JSON.stringify(
+                    productoAntiguo.producto
+                )} a: ${JSON.stringify(producto)}`,
+            });
+            const historyIsSaved = await newHistory.save();
+            res.send({ isUpdated, historyIsSaved });
+        }
     } catch (err) {
         res.status(413).send(err);
         next(err);

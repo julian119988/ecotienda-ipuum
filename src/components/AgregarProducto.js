@@ -22,15 +22,19 @@ export default function AgregarVendedor() {
         setFirstRender(true);
         if (location.state.default) {
             setProducto(() => location.state.producto);
-            productoRef.current.defaultValue = location.state.producto.producto;
-            cantidadRef.current.defaultValue = location.state.producto.cantidad;
-            marcaRef.current.defaultValue = location.state.producto.marca;
+            productoRef.current.defaultValue =
+                location.state.producto.producto.producto;
+            cantidadRef.current.defaultValue =
+                location.state.producto.producto.cantidad;
+            marcaRef.current.defaultValue =
+                location.state.producto.producto.marca;
             precioCompraRef.current.defaultValue =
-                location.state.producto.precioCompra;
+                location.state.producto.producto.precioCompra;
             precioVentaRef.current.defaultValue =
-                location.state.producto.precioVenta;
+                location.state.producto.producto.precioVenta;
             porcentajeGananciaRef.current.defaultValue =
-                location.state.producto.porcentajeGanancia;
+                location.state.producto.producto.porcentajeGanancia;
+            location.state.producto.producto.concesion && setIsConcesion(true);
             productoRef.current.focus();
         } else {
             setProducto({
@@ -126,7 +130,7 @@ export default function AgregarVendedor() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await location.state.funcion(producto); // Falta agregar concesion a la llamada y el sv
+            await location.state.funcion(producto, location.state.producto); // Falta agregar concesion a la llamada y el sv
             history.goBack();
         } catch (err) {
             console.log(err);
@@ -190,6 +194,7 @@ export default function AgregarVendedor() {
                     onChange={handleChange}
                     ref={precioCompraRef}
                     onFocus={handleFocus}
+                    step="0.01"
                     required
                 />
                 <Label>Precio de venta</Label>
@@ -199,6 +204,7 @@ export default function AgregarVendedor() {
                     onChange={handleChange}
                     ref={precioVentaRef}
                     name="venta"
+                    step="0.01"
                     required
                 />
                 <Label>
@@ -212,6 +218,7 @@ export default function AgregarVendedor() {
                     ref={porcentajeGananciaRef}
                     onFocus={handleFocus}
                     name="ganancia"
+                    step="0.01"
                     required
                 />
                 <Label>Producto de conceción</Label>

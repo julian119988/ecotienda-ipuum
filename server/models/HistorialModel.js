@@ -8,6 +8,7 @@ const historialSchema = new Schema(
         responsable: String,
         opcional: String,
         total: Number,
+        concesion: Boolean,
     },
     { timestamps: true }
 );

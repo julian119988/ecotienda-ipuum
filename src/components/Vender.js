@@ -44,6 +44,7 @@ export default function Vender(props) {
     const fetchProductos = async (busqueda) => {
         setIsLoading(false);
         const response = await getProductos(busqueda);
+        console.log(response);
         setProductos(response);
     };
     const handleChange = (event) => {
@@ -85,6 +86,7 @@ export default function Vender(props) {
                             cantidad: parseInt(response),
                             porcentajeGanancia: producto.porcentajeGanancia,
                             marca: producto.marca,
+                            concesion: producto.concesion,
                         },
                     ]);
                 }
