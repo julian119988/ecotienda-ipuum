@@ -21,6 +21,7 @@ import AgregarProducto from "./AgregarProducto";
 import AgregarFraccionamiento from "./AgregarFraccionamiento";
 import Inicio from "./Inicio";
 import StatusBar from "./StatusBar";
+import Ajustes from "./Ajustes";
 import smalltalk from "smalltalk";
 
 const GlobalStyle = createGlobalStyle`
@@ -146,6 +147,9 @@ export default function App() {
                             />
                             <Route path="/agregar-fraccionamiento">
                                 <AgregarFraccionamiento user={user} />
+                            </Route>
+                            <Route path="/ajustes">
+                                <Ajustes />
                             </Route>
                             <Redirect to="/" />
                         </>

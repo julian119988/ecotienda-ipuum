@@ -121,13 +121,16 @@ export const deleteVendedor = async (req, res, next) => {
 
 export const uploadProducto = async (req, res, next) => {
     const {
-        producto,
-        precioVenta,
-        cantidad,
-        marca,
-        precioCompra,
-        porcentajeGanancia,
-        concesion,
+        producto: {
+            producto,
+            precioVenta,
+            cantidad,
+            marca,
+            precioCompra,
+            porcentajeGanancia,
+            concesion,
+        },
+        user,
     } = await req.body;
     try {
         const nuevoProducto = new ProductosModel({
@@ -140,6 +143,16 @@ export const uploadProducto = async (req, res, next) => {
             concesion,
         });
         const isSaved = await nuevoProducto.save();
+        const nuevoProductoHistorial = new HistorialModel({
+            tipo: "producto",
+            responsable: user.nombre,
+            descripcion: `Nuevo producto agregado(${
+                concesion ? "De concesion" : "No es de concesion"
+            }): ${producto}`,
+            total: concesion ? "" : parseInt(cantidad) * parseInt(precioCompra),
+            cambioStock: true,
+        });
+        const historialIsSaved = await nuevoProductoHistorial.save();
         res.send(isSaved);
     } catch (err) {
         res.status(413).send(err);
@@ -193,6 +206,8 @@ export const updateProducto = async (req, res, next) => {
                 } cambio de: ${productoAntiguo[productoAntiguo.campo]}. A: ${
                     producto[productoAntiguo.campo]
                 }`,
+                cambioStock:
+                    productoAntiguo.campo === "cantidad" ? true : false,
             });
             const historyIsSaved = await newHistory.save();
             res.send({ isUpdated, historyIsSaved });
@@ -203,6 +218,18 @@ export const updateProducto = async (req, res, next) => {
                 descripcion: `El producto se ha actualizado de ${JSON.stringify(
                     productoAntiguo.producto
                 )} a: ${JSON.stringify(producto)}`,
+                cambioStock:
+                    parseInt(productoAntiguo.producto.cantidad) ===
+                    parseInt(producto.cantidad)
+                        ? false
+                        : true,
+                total:
+                    parseInt(productoAntiguo.producto.cantidad) ===
+                    parseInt(producto.cantidad)
+                        ? ""
+                        : (parseInt(producto.cantidad) -
+                              parseInt(productoAntiguo.producto.cantidad)) *
+                          parseInt(producto.precioCompra),
             });
             const historyIsSaved = await newHistory.save();
             res.send({ isUpdated, historyIsSaved });
@@ -409,6 +436,26 @@ export const cierreCaja = async (req, res, next) => {
         await newHistory.save();
         res.send(isSaved);
     } catch (err) {
+        res.status(418).send(err);
+        next(err);
+    }
+};
+export const deleteProductos = async (req, res, next) => {
+    try {
+        const isDeleted = await ProductosModel.collection.drop();
+        res.send({ message: "Productos borrados exitosamente" });
+    } catch (err) {
+        console.log(err);
+        res.status(418).send(err);
+        next(err);
+    }
+};
+export const deleteHistorial = async (req, res, next) => {
+    try {
+        const isDeleted = await HistorialModel.collection.drop();
+        res.send({ message: "Historial borrado exitosamente" });
+    } catch (err) {
+        console.log(err);
         res.status(418).send(err);
         next(err);
     }

@@ -9,6 +9,7 @@ const historialSchema = new Schema(
         opcional: String,
         total: Number,
         concesion: Boolean,
+        cambioStock: Boolean,
     },
     { timestamps: true }
 );

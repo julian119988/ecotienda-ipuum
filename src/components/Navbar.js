@@ -107,6 +107,20 @@ export default function Navbar(props) {
                             Fraccionamiento
                         </NavLink>
                     </ItemList>
+                    <ItemList>
+                        <NavLink
+                            to="ajustes"
+                            activeStyle={{
+                                backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 0 5vh",
+                            }}
+                        >
+                            Ajustes
+                        </NavLink>
+                    </ItemList>
                 </NavList>
             ) : (
                 <NavList>

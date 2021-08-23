@@ -167,6 +167,7 @@ export const postVenta = async (productos, isFeria, user) => {
 export const getHistorial = async (query) => {
     try {
         const response = await api.get("/historial", { params: query });
+        console.log(response.data);
         return response.data;
     } catch (err) {
         console.log(err);
@@ -193,6 +194,26 @@ export const postCierreCaja = async (monto, user) => {
         return response.data;
     } catch (err) {
         console.log(err.response);
+        return err;
+    }
+};
+
+//Borrar bases de datos
+export const postDeleteProductos = async () => {
+    try {
+        const response = await api.post("/deleteProductos");
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};
+export const postDeleteHistorial = async () => {
+    try {
+        const response = await api.post("/deleteHistorial");
+        return response.data;
+    } catch (err) {
+        console.log(err);
         return err;
     }
 };

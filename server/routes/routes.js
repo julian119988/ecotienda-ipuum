@@ -19,6 +19,8 @@ import {
     getHistorial,
     aperturaCaja,
     cierreCaja,
+    deleteProductos,
+    deleteHistorial,
 } from "../controllers/controllers";
 
 router.post("/todo", uploadTodo);
@@ -46,5 +48,8 @@ router.get("/historial", getHistorial);
 
 router.post("/aperturaCaja", aperturaCaja);
 router.post("/cierreCaja", cierreCaja);
+
+router.post("/deleteProductos", deleteProductos);
+router.post("/deleteHistorial", deleteHistorial);
 
 export default router;
