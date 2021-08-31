@@ -68,6 +68,7 @@ export default function AdministarProductos(props) {
         let seguir = true;
         let response;
         if (campo === "Producto" || campo === "Marca") tipo = "string";
+        console.log(campo, product, current, literal, opt);
         try {
             while (seguir) {
                 response = await smalltalk.prompt(
@@ -89,6 +90,8 @@ export default function AdministarProductos(props) {
                             [literal]: parseInt(current),
                             producto: product.producto,
                             user: props.user,
+                            precio: product.precioCompra,
+                            concesion: product.concesion,
                             campo: literal,
                         }
                     );

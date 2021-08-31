@@ -198,19 +198,40 @@ export const updateProducto = async (req, res, next) => {
     try {
         const isUpdated = await ProductosModel.findByIdAndUpdate(id, producto);
         if (productoAntiguo.campo) {
-            const newHistory = new HistorialModel({
-                tipo: "producto",
-                responsable: productoAntiguo.user.nombre,
-                descripcion: `Producto: ${productoAntiguo.producto}. ${
-                    productoAntiguo.campo
-                } cambio de: ${productoAntiguo[productoAntiguo.campo]}. A: ${
-                    producto[productoAntiguo.campo]
-                }`,
-                cambioStock:
-                    productoAntiguo.campo === "cantidad" ? true : false,
-            });
-            const historyIsSaved = await newHistory.save();
-            res.send({ isUpdated, historyIsSaved });
+            if (productoAntiguo.campo === "cantidad") {
+                const newHistory = new HistorialModel({
+                    tipo: "producto",
+                    responsable: productoAntiguo.user.nombre,
+                    descripcion: `Producto: ${productoAntiguo.producto}. ${
+                        productoAntiguo.campo
+                    } cambio de: ${
+                        productoAntiguo[productoAntiguo.campo]
+                    }. A: ${producto[productoAntiguo.campo]}`,
+                    cambioStock:
+                        productoAntiguo.campo === "cantidad" ? true : false,
+                    total: productoAntiguo.concesion
+                        ? ""
+                        : productoAntiguo.precio *
+                          (producto.cantidad - productoAntiguo.cantidad) *
+                          -1,
+                });
+                const historyIsSaved = await newHistory.save();
+                res.send({ isUpdated, historyIsSaved });
+            } else {
+                const newHistory = new HistorialModel({
+                    tipo: "producto",
+                    responsable: productoAntiguo.user.nombre,
+                    descripcion: `Producto: ${productoAntiguo.producto}. ${
+                        productoAntiguo.campo
+                    } cambio de: ${
+                        productoAntiguo[productoAntiguo.campo]
+                    }. A: ${producto[productoAntiguo.campo]}`,
+                    cambioStock:
+                        productoAntiguo.campo === "cantidad" ? true : false,
+                });
+                const historyIsSaved = await newHistory.save();
+                res.send({ isUpdated, historyIsSaved });
+            }
         } else {
             const newHistory = new HistorialModel({
                 tipo: "producto",
@@ -229,7 +250,8 @@ export const updateProducto = async (req, res, next) => {
                         ? ""
                         : (parseInt(producto.cantidad) -
                               parseInt(productoAntiguo.producto.cantidad)) *
-                          parseInt(producto.precioCompra),
+                          parseInt(producto.precioCompra) *
+                          -1,
             });
             const historyIsSaved = await newHistory.save();
             res.send({ isUpdated, historyIsSaved });
@@ -406,7 +428,7 @@ export const aperturaCaja = async (req, res, next) => {
             tipo: "caja",
             responsable: user.nombre,
             descripcion: `Apertura de caja con un monto de $${monto}.`,
-            total: parseInt(monto),
+            total: -parseInt(monto),
         });
         await newHistory.save();
         res.send(isSaved);
@@ -457,6 +479,33 @@ export const deleteHistorial = async (req, res, next) => {
     } catch (err) {
         console.log(err);
         res.status(418).send(err);
+        next(err);
+    }
+};
+export const postNotaDeCredito = async (req, res, next) => {
+    const { total, carrito, user } = req.body;
+    console.log(total, carrito, user);
+    let productos = [];
+    try {
+        carrito.forEach(async (item) => {
+            productos.push({
+                producto: item.producto,
+                cantidad: item.cantidad,
+            });
+            await ProductosModel.findByIdAndUpdate(item._id, {
+                $inc: { cantidad: item.cantidad },
+            }).exec();
+        });
+        const newHistory = new HistorialModel({
+            tipo: "nota",
+            responsable: user.nombre,
+            descripcion: JSON.stringify(productos),
+            total: -total,
+        });
+        const isSaved = await newHistory.save();
+        res.send("OK");
+    } catch (err) {
+        res.send(err);
         next(err);
     }
 };

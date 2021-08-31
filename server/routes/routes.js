@@ -21,6 +21,7 @@ import {
     cierreCaja,
     deleteProductos,
     deleteHistorial,
+    postNotaDeCredito,
 } from "../controllers/controllers";
 
 router.post("/todo", uploadTodo);
@@ -51,5 +52,7 @@ router.post("/cierreCaja", cierreCaja);
 
 router.post("/deleteProductos", deleteProductos);
 router.post("/deleteHistorial", deleteHistorial);
+
+router.post("/nota-de-credito", postNotaDeCredito);
 
 export default router;

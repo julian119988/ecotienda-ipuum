@@ -217,3 +217,17 @@ export const postDeleteHistorial = async () => {
         return err;
     }
 };
+
+export const postNotaDeCredito = async ({ total, carrito, user }) => {
+    try {
+        const response = await api.post("/nota-de-credito", {
+            total,
+            carrito,
+            user,
+        });
+        return response.data;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};

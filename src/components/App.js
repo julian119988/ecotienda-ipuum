@@ -19,6 +19,7 @@ import AgregarTodo from "./AgregarTodo";
 import AgregarVendedor from "./AgregarVendedor";
 import AgregarProducto from "./AgregarProducto";
 import AgregarFraccionamiento from "./AgregarFraccionamiento";
+import NotaDeCredito from "./NotaDeCredito";
 import Inicio from "./Inicio";
 import StatusBar from "./StatusBar";
 import Ajustes from "./Ajustes";
@@ -151,6 +152,9 @@ export default function App() {
                             <Route path="/ajustes">
                                 <Ajustes />
                             </Route>
+                            <Route path="/nota-de-credito">
+                                <NotaDeCredito user={user} />
+                            </Route>
                             <Redirect to="/" />
                         </>
                     ) : (
@@ -177,6 +181,9 @@ export default function App() {
 
                             <Route path="/agregar-fraccionamiento">
                                 <AgregarFraccionamiento user={user} />
+                            </Route>
+                            <Route path="/nota-de-credito">
+                                <NotaDeCredito user={user} />
                             </Route>
                             <Redirect to="/" />
                         </>

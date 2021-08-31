@@ -264,8 +264,10 @@ export default function Historial() {
                                                 return "background-color: lightcoral;";
                                             } else if (tipo === "caja") {
                                                 return "background-color: yellowgreen;";
-                                            } else {
+                                            } else if (tipo === "nota") {
                                                 return "background-color: lightskyblue;";
+                                            } else {
+                                                return "background-color: whitesmoke;";
                                             }
                                         }
 
@@ -369,6 +371,63 @@ export default function Historial() {
                                                                             />
                                                                         )}
                                                                     </div>
+                                                                );
+                                                            }
+                                                        )}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        {opcional
+                                                            ? opcional
+                                                            : "-"}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        {total ? total : "-"}
+                                                    </Td>
+                                                </Tr>
+                                            );
+                                        } else if (tipo === "nota") {
+                                            const descripcionJson =
+                                                JSON.parse(descripcion);
+                                            return (
+                                                <Tr
+                                                    hoverable
+                                                    key={_id}
+                                                    tipo={returnBackgroundColor}
+                                                >
+                                                    <Td hoverable>
+                                                        {new Date(
+                                                            createdAt
+                                                        ).getDate()}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        {`${new Date(
+                                                            createdAt
+                                                        ).getHours()}:${
+                                                            (new Date(
+                                                                createdAt
+                                                            ).getMinutes() < 10
+                                                                ? "0"
+                                                                : "") +
+                                                            new Date(
+                                                                createdAt
+                                                            ).getMinutes()
+                                                        }`}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        Nota de crédito
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        {responsable}
+                                                    </Td>
+                                                    <Td hoverable>
+                                                        <hr></hr>
+                                                        {descripcionJson.map(
+                                                            (item) => {
+                                                                return (
+                                                                    <>
+                                                                        <div>{`Producto: ${item.producto}. Cantidad: ${item.cantidad}`}</div>
+                                                                        <hr></hr>
+                                                                    </>
                                                                 );
                                                             }
                                                         )}

@@ -38,6 +38,20 @@ export default function Navbar(props) {
                     </ItemList>
                     <ItemList>
                         <NavLink
+                            to="nota-de-credito"
+                            activeStyle={{
+                                backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 5vh 5vh",
+                            }}
+                        >
+                            Nota de credito
+                        </NavLink>
+                    </ItemList>
+                    <ItemList>
+                        <NavLink
                             to="administrar-productos"
                             activeStyle={{
                                 backgroundColor: "orange",
@@ -151,6 +165,20 @@ export default function Navbar(props) {
                             }}
                         >
                             Vender
+                        </NavLink>
+                    </ItemList>
+                    <ItemList>
+                        <NavLink
+                            to="nota-de-credito"
+                            activeStyle={{
+                                backgroundColor: "orange",
+                                borderLeft: "1px solid white",
+                                borderBottom: "1px solid white",
+                                borderRight: "1px solid white",
+                                borderRadius: "0 0 5vh 5vh",
+                            }}
+                        >
+                            Nota de credito
                         </NavLink>
                     </ItemList>
                     <ItemList>
