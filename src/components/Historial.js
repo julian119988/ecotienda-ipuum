@@ -36,9 +36,13 @@ export default function Historial() {
             tempTipo = "fraccionamiento";
         } else if (tipo === "Ventas") {
             tempTipo = "venta";
-        } else if (tipo === "Apertura/Cierre de caja") {
-            tempTipo = "caja";
+        } else if (tipo === "Nota de credito") {
+            tempTipo = "nota";
+        }else if (tipo === "Apertura/Cierre de caja") {
+                tempTipo = "caja";
+            
         } else {
+            
             tempTipo = "todos";
         }
         if (fecha === "Enero") {
@@ -159,6 +163,7 @@ export default function Historial() {
                                 <Option>Apertura/Cierre de caja</Option>
                                 <Option>Ventas</Option>
                                 <Option>Fraccionamientos</Option>
+                                <Option>Nota de credito</Option>
                                 <Option>Movimientos de productos</Option>
                             </Select>
                         </Container>
