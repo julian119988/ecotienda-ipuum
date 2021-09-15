@@ -1,141 +1,162 @@
-import * as React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import {
-  getHistorial,
-  getVendedores,
-  getFraccionamiento,
-} from "../services/apiCalls";
+import TablaEmpleados from "./Contabilidad/TablaEmpleados";
+
 export default function Contabilidad() {
-  const [ventasVendedores, setVentasVendedores] = React.useState([]);
+    const [showTablaEmpleados, setShowTablaEmpleados] = useState(false);
+    const [showTablaProveedores, setShowTablaProveedores] = useState(false);
+    const [showTablaIpuum, setShowTablaIpuum] = useState(false);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 
-  React.useEffect(() => {
-    fetchDatos();
-  }, []);
-  const fetchDatos = async () => {
-    const tempList = [];
-    const vendedores = await getVendedores();
-    vendedores.forEach(async (vendedor) => {
-      const ventas = await getHistorial({
-        tipo: "venta",
-        responsable: vendedor.nombre,
-        fecha: 9,
-      });
-
-      const fraccionamientos = await getFraccionamiento(9, vendedor.nombre);
-      const info = await calcularInfoVentas(
-        ventas,
-        fraccionamientos,
-        vendedor.nombre
-      );
-      tempList.push(info);
+    useEffect(() => {
+        console.log(selectedMonth, selectedYear);
     });
-    setVentasVendedores(tempList);
-  };
-  React.useEffect(() => {
-    console.log(ventasVendedores);
-  }, [ventasVendedores]);
-
-  const calcularInfoVentas = async (ventas, fraccionamientos, responsable) => {
-    //Falta mostrar bien la tabla y realizar el filtrado de los fraccionamientos en server/controllers
-    let ventasEnFeria = 0;
-    let ventasEnLocal = 0;
-    let gananciaPorVentas = 0;
-    let gananciaPorFraccionamientos = 0;
-    let total = 0;
-    ventas.forEach((venta) => {
-      if (venta.opcional === "local") {
-        ventasEnLocal += 1;
-        gananciaPorVentas += venta.total * 0.35;
-      } else {
-        ventasEnFeria += 1;
-        gananciaPorVentas += venta.total * 0.45;
-      }
-    });
-    fraccionamientos.forEach((fraccionamiento) => {
-      gananciaPorFraccionamientos += fraccionamiento.ganancia;
-    });
-    total = gananciaPorFraccionamientos + gananciaPorVentas;
-    return {
-      ventasEnFeria,
-      ventasEnLocal,
-      gananciaPorVentas,
-      gananciaPorFraccionamientos,
-      total,
-      responsable,
-    };
-  };
-  return (
-    <Container>
-      <Table>
-        <Thead>
-          <Tr>
-            <Th colSpan="6">Tabla empleados</Th>
-          </Tr>
-          <Tr>
-            <Th>Nombre</Th>
-            <Th>Ventas en feria</Th>
-            <Th>Ventas en local</Th>
-            <Th>Ganancia por ventas</Th>
-            <Th>Ganancia por fraccionamientos</Th>
-            <Th>Total</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {ventasVendedores.map((vendedor) => {
-            const {
-              responsable,
-              gananciaPorFraccionamientos,
-              gananciaPorVentas,
-              total,
-              ventasEnFeria,
-              ventasEnLocal,
-            } = vendedor;
-            return (
-              <Tr>
-                <Td>{responsable}</Td>
-                <Td>{ventasEnFeria}</Td>
-                <Td>{ventasEnLocal}</Td>
-                <Td>{gananciaPorVentas}</Td>
-                <Td>{gananciaPorFraccionamientos}</Td>
-                <Td>{total}</Td>
-              </Tr>
-            );
-          })}
-        </Tbody>
-      </Table>
-    </Container>
-  );
+    return (
+        <>
+            <FiltrosDiv>
+                <RowContainer>
+                    <TabToggleTabla
+                        onClick={() =>
+                            setShowTablaEmpleados(!showTablaEmpleados)
+                        }
+                        isActive={showTablaEmpleados}
+                    >
+                        Tabla empleados
+                    </TabToggleTabla>
+                    <TabToggleTabla
+                        onClick={() =>
+                            setShowTablaProveedores(!showTablaProveedores)
+                        }
+                        isActive={showTablaProveedores}
+                    >
+                        Tabla proveedores
+                    </TabToggleTabla>
+                    <TabToggleTabla
+                        onClick={() => setShowTablaIpuum(!showTablaIpuum)}
+                        isActive={showTablaIpuum}
+                    >
+                        Tabla IPUUM
+                    </TabToggleTabla>
+                </RowContainer>
+                <FiltroFechaDiv>
+                    <MonthDiv>
+                        <MonthTitle>Ingrese el mes</MonthTitle>
+                        <Select
+                            defaultValue={new Date().getMonth()}
+                            onChange={(event) =>
+                                setSelectedMonth(parseInt(event.target.value))
+                            }
+                        >
+                            <Option value={0}>Enero</Option>
+                            <Option value={1}>Febrero</Option>
+                            <Option value={2}>Marzo</Option>
+                            <Option value={3}>Abril</Option>
+                            <Option value={4}>Mayo</Option>
+                            <Option value={5}>Junio</Option>
+                            <Option value={6}>Julio</Option>
+                            <Option value={7}>Agosto</Option>
+                            <Option value={8}>Septiembre</Option>
+                            <Option value={9}>Octubre</Option>
+                            <Option value={10}>Noviembre</Option>
+                            <Option value={11}>Diciembre</Option>
+                        </Select>
+                    </MonthDiv>
+                    <YearDiv>
+                        <YearTitle>Ingrse el año</YearTitle>
+                        <Select
+                            defaultValue={new Date().getFullYear()}
+                            onChange={(event) =>
+                                setSelectedYear(parseInt(event.target.value))
+                            }
+                        >
+                            <Option value={new Date().getFullYear() - 1}>
+                                {new Date().getFullYear() - 1}
+                            </Option>
+                            <Option value={new Date().getFullYear()}>
+                                {new Date().getFullYear()}
+                            </Option>
+                            <Option value={new Date().getFullYear() + 1}>
+                                {new Date().getFullYear() + 1}
+                            </Option>
+                        </Select>
+                    </YearDiv>
+                </FiltroFechaDiv>
+            </FiltrosDiv>
+            {showTablaEmpleados ? (
+                <TablaEmpleados month={selectedMonth + 1} year={selectedYear} />
+            ) : (
+                ""
+            )}
+        </>
+    );
 }
-const Container = styled.div`
-  width: 100%;
-  padding: 5vh 10vh 5vh 10vh;
-`;
-const Table = styled.table`
-  margin-top: 16px;
-  border-collapse: collapse;
-  display: block;
-  overflow-x: auto;
+const TabToggleTabla = styled.button`
+    width: 33.33%;
+    height: 10vh;
+    outline: none;
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+    border-top: 1px solid white;
+    border-bottom: none;
+    color: white;
+    background-color: tomato;
+    border-radius: 5vh 5vh 0 0;
+    cursor: pointer;
+    ${(props) =>
+        props.isActive
+            ? "background-color: orange;"
+            : `&:hover {
+        background-color: wheat;
+    }`}
 `;
 
-const Thead = styled.thead``;
-const Tbody = styled.tbody``;
-const Th = styled.th`
-  color: white;
-  background-color: tomato;
-  height: 3vh;
-  border: 1px solid #ddd;
-  word-break: break-word;
-  min-width: 150px;
-  ${(props) => props.delete && "min-width: 150px;"}
+const FiltrosDiv = styled.div`
+    display: flex;
+    width: 100%;
+    height: 20vh;
+    flex-direction: column;
+    background-color: tomato;
 `;
-const Td = styled.td`
-  height: 3vh;
-  border: 1px solid #ddd;
-  word-break: break-word;
-  padding-left: 5px;
-  min-width: 150px;
-  max-width: 250px;
-  text-align: center;
-  ${(props) => props.delete && "width: 150px; padding:0; margin:0;"}
+const RowContainer = styled.div`
+    display: flex;
+    width: 100%;
+    flex-direction: row;
 `;
-const Tr = styled.tr``;
+const FiltroFechaDiv = styled.div`
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+`;
+const YearDiv = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+`;
+const MonthDiv = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+`;
+const YearTitle = styled.h4`
+    margin: 0;
+    padding: 0;
+    color: white;
+    font-size: 25px;
+`;
+const MonthTitle = styled.h4`
+    margin: 0;
+    padding: 0;
+    color: white;
+    font-size: 25px;
+`;
+const Select = styled.select`
+    height: 3vh;
+    margin-top: 2vh;
+`;
+const Option = styled.option``;

@@ -9,6 +9,7 @@ export default function Historial() {
     const tipoRef = useRef();
     const fechaRef = useRef();
     const vendedorRef = useRef();
+    const yearRef = useRef();
 
     useEffect(() => {
         fetchVendedores();
@@ -38,11 +39,9 @@ export default function Historial() {
             tempTipo = "venta";
         } else if (tipo === "Nota de credito") {
             tempTipo = "nota";
-        }else if (tipo === "Apertura/Cierre de caja") {
-                tempTipo = "caja";
-            
+        } else if (tipo === "Apertura/Cierre de caja") {
+            tempTipo = "caja";
         } else {
-            
             tempTipo = "todos";
         }
         if (fecha === "Enero") {
@@ -78,6 +77,10 @@ export default function Historial() {
                 tipo: tempTipo,
                 responsable: tempVendedor,
                 fecha: tempFecha,
+                year:
+                    yearRef.current.value === "todos"
+                        ? "todos"
+                        : parseInt(yearRef.current.value),
             })
         );
     };
@@ -195,6 +198,22 @@ export default function Historial() {
                                 <Option>Noviembre</Option>
                                 <Option>Diciembre</Option>
                             </Select>
+                            <Select
+                                defaultValue={"todos"}
+                                ref={yearRef}
+                                onChange={handleClick}
+                            >
+                                <Option value={"todos"}>Todos</Option>
+                                <Option value={new Date().getFullYear() - 1}>
+                                    {new Date().getFullYear() - 1}
+                                </Option>
+                                <Option value={new Date().getFullYear()}>
+                                    {new Date().getFullYear()}
+                                </Option>
+                                <Option value={new Date().getFullYear() + 1}>
+                                    {new Date().getFullYear() + 1}
+                                </Option>
+                            </Select>
                         </Container>
                     </Container>
                 </Container>
@@ -205,6 +224,7 @@ export default function Historial() {
                                 tipo: "todos",
                                 responsable: "todos",
                                 fecha: "todos",
+                                year: "todos",
                             })
                         );
                     }}
