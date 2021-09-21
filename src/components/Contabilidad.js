@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import TablaEmpleados from "./Contabilidad/TablaEmpleados";
+import TablaProveedores from "./Contabilidad/TablaProveedores";
 
 export default function Contabilidad() {
     const [showTablaEmpleados, setShowTablaEmpleados] = useState(false);
     const [showTablaProveedores, setShowTablaProveedores] = useState(false);
-    const [showTablaIpuum, setShowTablaIpuum] = useState(false);
+    const [showTablaGeneral, setShowTablaGeneral] = useState(false);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 
-    useEffect(() => {
-        console.log(selectedMonth, selectedYear);
-    });
     return (
         <>
             <FiltrosDiv>
@@ -33,10 +31,10 @@ export default function Contabilidad() {
                         Tabla proveedores
                     </TabToggleTabla>
                     <TabToggleTabla
-                        onClick={() => setShowTablaIpuum(!showTablaIpuum)}
-                        isActive={showTablaIpuum}
+                        onClick={() => setShowTablaGeneral(!showTablaGeneral)}
+                        isActive={showTablaGeneral}
                     >
-                        Tabla IPUUM
+                        Tabla general
                     </TabToggleTabla>
                 </RowContainer>
                 <FiltroFechaDiv>
@@ -85,6 +83,14 @@ export default function Contabilidad() {
             </FiltrosDiv>
             {showTablaEmpleados ? (
                 <TablaEmpleados month={selectedMonth + 1} year={selectedYear} />
+            ) : (
+                ""
+            )}
+            {showTablaProveedores ? (
+                <TablaProveedores
+                    month={selectedMonth + 1}
+                    year={selectedYear}
+                />
             ) : (
                 ""
             )}
