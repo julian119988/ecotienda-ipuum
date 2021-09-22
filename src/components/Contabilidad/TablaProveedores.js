@@ -1,7 +1,8 @@
 import * as React from "react";
 import styled from "styled-components";
 import { getHistorial } from "../../services/apiCalls";
-export default function TablaEmpleados(props) {
+
+export default function TablaProveedores(props) {
     const [test, setTest] = React.useState([]);
     const [productosConcesion, setProductosConcesion] = React.useState([]);
 

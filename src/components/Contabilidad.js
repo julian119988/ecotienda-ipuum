@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import TablaEmpleados from "./Contabilidad/TablaEmpleados";
 import TablaProveedores from "./Contabilidad/TablaProveedores";
+import TablaGeneral from "./Contabilidad/TablaGeneral";
 
 export default function Contabilidad() {
     const [showTablaEmpleados, setShowTablaEmpleados] = useState(false);
@@ -61,7 +62,7 @@ export default function Contabilidad() {
                         </Select>
                     </MonthDiv>
                     <YearDiv>
-                        <YearTitle>Ingrse el año</YearTitle>
+                        <YearTitle>Ingrese el año</YearTitle>
                         <Select
                             defaultValue={new Date().getFullYear()}
                             onChange={(event) =>
@@ -91,6 +92,11 @@ export default function Contabilidad() {
                     month={selectedMonth + 1}
                     year={selectedYear}
                 />
+            ) : (
+                ""
+            )}
+            {showTablaGeneral ? (
+                <TablaGeneral month={selectedMonth + 1} year={selectedYear} />
             ) : (
                 ""
             )}

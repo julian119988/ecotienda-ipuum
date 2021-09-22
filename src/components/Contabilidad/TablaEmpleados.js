@@ -5,6 +5,7 @@ import {
     getVendedores,
     getFraccionamiento,
 } from "../../services/apiCalls";
+
 export default function TablaEmpleados(props) {
     const [ventasVendedores, setVentasVendedores] = React.useState([]);
 
