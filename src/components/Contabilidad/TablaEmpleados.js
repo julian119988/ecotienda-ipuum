@@ -34,6 +34,7 @@ export default function TablaEmpleados(props) {
     };
     React.useEffect(() => {
         fetchDatos();
+        console.log(ventasVendedores);
     }, [props.month, props.year]);
     const calcularInfoVentas = async (
         ventas,
@@ -46,12 +47,23 @@ export default function TablaEmpleados(props) {
         let gananciaPorFraccionamientos = 0;
         let total = 0;
         ventas.forEach((venta) => {
+            console.log(venta);
             if (venta.opcional === "local") {
                 ventasEnLocal += 1;
-                gananciaPorVentas += venta.total * 0.35;
+                JSON.parse(venta.descripcion).forEach(({ producto }) => {
+                    gananciaPorVentas +=
+                        (producto.cantidad * producto.precioVenta -
+                            producto.cantidad * producto.precioCompra) *
+                        0.35;
+                });
             } else {
                 ventasEnFeria += 1;
-                gananciaPorVentas += venta.total * 0.45;
+                JSON.parse(venta.descripcion).forEach(({ producto }) => {
+                    gananciaPorVentas +=
+                        (producto.cantidad * producto.precioVenta -
+                            producto.cantidad * producto.precioCompra) *
+                        0.4;
+                });
             }
         });
         fraccionamientos.forEach((fraccionamiento) => {
@@ -108,7 +120,7 @@ export default function TablaEmpleados(props) {
                     </Tbody>
                 </Table>
             ) : (
-                <div>Loading. . .</div>
+                <div>No hay resultados :( . . .</div>
             )}
         </Container>
     );

@@ -36,6 +36,8 @@
     "app-module-path": "^2.2.0",
     "axios": "^0.18.1",
     "bcrypt": "^5.0.1",
+    "bulma": "^0.9.3",
+    "bulma-helpers": "^0.4.0",
     "cors": "^2.8.5",
     "electron-is-dev": "^1.2.0",
     "express": "^4.17.1",
@@ -51,7 +53,8 @@
     "react-router-dom": "^5.2.0",
     "regenerator-runtime": "^0.13.9",
     "smalltalk": "^4.0.7",
-    "styled-components": "^5.3.0"
+    "styled-components": "^5.3.0",
+    "worker-loader": "^3.0.8"
   },
   "build": {
     "productName": "Ecotienda IPUUM",

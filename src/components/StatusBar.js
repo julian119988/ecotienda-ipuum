@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
+//import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 
 export default function StatusBar(props) {
     const [fecha, setFecha] = useState();
