@@ -287,6 +287,7 @@ export default function AdministarProductos(props) {
                                                     "cantidad"
                                                 )
                                             }
+                                            cantidad={cantidad}
                                             hoverable
                                         >
                                             {cantidad}
@@ -451,6 +452,13 @@ const Td = styled.td`
     padding-left: 5px;
     max-width: 150px;
     text-align: center;
+    ${(props) =>
+        props.cantidad &&
+        (props.cantidad >= 10
+            ? "background-color: #2ac32a;"
+            : props.cantidad < 10 && props.cantidad >= 5
+            ? "background-color: #efef34;"
+            : "background-color: #ff4848;")}
     ${(props) => props.short && "width: 100px; margin: 0; padding: 0;"}
     ${(props) => !props.hoverable && `background-color: aliceblue;`}
     &:hover {

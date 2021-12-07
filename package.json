@@ -23,16 +23,17 @@
     "concurrently": "^4.1.2",
     "customize-cra": "^0.2.14",
     "electron": "^5.0.13",
-    "electron-builder": "^20.44.4",
     "react-app-rewired": "^2.1.8",
     "react-scripts": "3.0.1",
-    "wait-on": "^3.3.0"
+    "wait-on": "^3.3.0",
+    "electron-builder": "^22.11.7"
   },
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/utils": "^4.11.2",
     "@react-pdf/renderer": "^2.0.18",
+    "app-builder-lib": "^22.14.3",
     "app-module-path": "^2.2.0",
     "axios": "^0.18.1",
     "bcrypt": "^5.0.1",
